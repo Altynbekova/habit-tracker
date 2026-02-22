@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">HabitTracker2</string>
+    <string name="fabAddHabitContent">Добавить привычку</string>
+    <string name="done">Выполнено</string>
+    <string name="change">Изменить</string>
+    <string name="delete">Удалить</string>
+</resources>
