@@ -4,4 +4,7 @@
     <string name="done">Выполнено</string>
     <string name="change">Изменить</string>
     <string name="delete">Удалить</string>
+    <string name="channel_name">HabitTracker notifications channel</string>
+    <string name="channel_description">Channel to notify of habits to develop</string>
+    <string name="notification_pick_time_btn_txt">Выбрать время напоминания</string>
 </resources>

@@ -20,6 +20,7 @@ public class HabitModel implements Parcelable {
     private int currentStreak;
     private boolean[] completedDays = new boolean[7];
     private String lastCompletedDate = "";
+    private String notificationTime = "";
 
     public HabitModel() {
     }
@@ -33,13 +34,15 @@ public class HabitModel implements Parcelable {
         currentStreak = in.readInt();
         completedDays = in.createBooleanArray();
         lastCompletedDate = in.readString();
+        notificationTime = in.readString();
     }
 
-    public HabitModel(String name, String description, String color, int targetDays) {
+    public HabitModel(String name, String description, String color, int targetDays, String notificationTime) {
         this.name = name;
         this.description = description;
         this.color = color;
         this.targetDays = targetDays;
+        this.notificationTime = notificationTime;
     }
 
     @Override
@@ -56,6 +59,8 @@ public class HabitModel implements Parcelable {
         parcel.writeInt(targetDays);
         parcel.writeInt(currentStreak);
         parcel.writeBooleanArray(completedDays);
+        parcel.writeString(lastCompletedDate);
+        parcel.writeString(notificationTime);
     }
 
     public int getId() {
@@ -128,6 +133,14 @@ public class HabitModel implements Parcelable {
         this.lastCompletedDate = lastCompletedDate;
     }
 
+    public String getNotificationTime() {
+        return notificationTime;
+    }
+
+    public void setNotificationTime(String notificationTime) {
+        this.notificationTime = notificationTime;
+    }
+
     public boolean isDayCompleted(int dayIndex) {
         if (dayIndex >= 0 && dayIndex < completedDays.length) {
             return completedDays[dayIndex];
@@ -136,7 +149,9 @@ public class HabitModel implements Parcelable {
     }
 
     public boolean isTodayCompleted() {
-        return !lastCompletedDate.isEmpty() && LocalDate.now().isEqual(LocalDate.parse(lastCompletedDate));
+        if (lastCompletedDate == null || lastCompletedDate.isEmpty())
+            return false;
+        return LocalDate.now().isEqual(LocalDate.parse(lastCompletedDate));
     }
 
 

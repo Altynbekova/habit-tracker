@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#D0BCFF</color>
+    <color name="on_primary">#381E72</color>
+    <color name="habit_card_bg">#1C1B1F</color> <!-- Dark Grey -->
+    <color name="streak_fire">#FFAB91</color>   <!-- Muted Coral -->
+</resources>

@@ -15,6 +15,18 @@
     <style name="Base.Theme.HabitTracker" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+        <!-- Main Brand Colors -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorOnPrimary">@color/on_primary</item>
+
+        <!-- Habit Specific UI -->
+        <item name="colorSurface">@color/habit_card_bg</item>
+        <item name="colorTertiary">@color/streak_fire</item>
+
+        <!-- Status Bar & Navigation -->
+        <item name="android:statusBarColor">?attr/colorSurface</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="Theme.MyApplication2" parent="Base.Theme.HabitTracker" />

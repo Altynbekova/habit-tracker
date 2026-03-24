@@ -71,4 +71,8 @@ public class AppRepo {
         Future<HabitModel> future = Executors.newSingleThreadExecutor().submit(callable);
         return future.get();
     }
+
+    public void updateTime(int id, String time) {
+        executor.execute(() -> appDatabase.habitDao().updateTime(id, time));
+    }
 }

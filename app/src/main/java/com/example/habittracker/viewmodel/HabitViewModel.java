@@ -49,6 +49,10 @@ public class HabitViewModel extends AndroidViewModel {
         return appRepo.getById(habitId);
     }
 
+    public void updateTime(int id, String time) {
+        appRepo.updateTime(id, time);
+    }
+
     /*private HabitRepository habitRepository;
     LiveData<List<HabitModel>> allHabits = habitRepository.getAllHabits();*/
 

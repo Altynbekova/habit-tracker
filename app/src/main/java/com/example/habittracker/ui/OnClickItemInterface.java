@@ -4,9 +4,9 @@ import com.example.habittracker.db.HabitModel;
 
 public interface OnClickItemInterface {
     /**
-     *
+     * Handles event and edits or deletes habit
      * @param habitModel model of habit
-     * @param toEdit true - to edit habit, false - to delete habit
+     * @param toEdit true - edit habit, false - delete habit
      */
     void onClickItem(HabitModel habitModel, boolean toEdit);
     void onCompleteItem(HabitModel habitModel);

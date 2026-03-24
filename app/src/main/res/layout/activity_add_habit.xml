@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
+        <variable
+            name="addHabitViewModel"
+            type="com.example.habittracker.viewmodel.AddHabitViewModel" />
+        <variable
+            name="habitViewModel"
+            type="com.example.habittracker.viewmodel.HabitViewModel" />
+        <variable
+            name="habitModel"
+            type="com.example.habittracker.db.HabitModel" />
+        <variable
+            name="eventsHandler"
+            type="com.example.habittracker.ui.AddHabitActivityHandler" />
+    </data>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -33,7 +48,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Название привычки"
-                android:maxLines="1" />
+                android:maxLines="1"
+                android:text="@={habitModel.name}"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -49,7 +65,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Описание привычки"
-                android:maxLines="3" />
+                android:maxLines="3"
+                android:text="@={habitModel.description}"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -79,36 +96,40 @@
                     android:id="@+id/radioBlue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:buttonTint="@color/pastel_blue"
-                    android:checked="true" />
+                    android:checked='@{"#AEC6CF".equals(habitModel.color)}'
+                    android:buttonTint="@color/accent_color"/>
 
                 <RadioButton
                     android:id="@+id/radioGreen"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:buttonTint="@color/pastel_green" />
+                    android:checked='@{"#B5EAD7".equals(habitModel.color)}'
+                    android:buttonTint="@color/pastel_green"/>
 
                 <RadioButton
                     android:id="@+id/radioLavender"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:buttonTint="@color/pastel_lavender" />
+                    android:checked='@{"#E6E6FA".equals(habitModel.color)}'
+                    android:buttonTint="@color/pastel_lavender"/>
 
                 <RadioButton
                     android:id="@+id/radioPeach"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:buttonTint="@color/pastel_peach" />
+                    android:checked='@{"#FFD8B1".equals(habitModel.color)}'
+                    android:buttonTint="@color/pastel_peach"/>
 
                 <RadioButton
                     android:id="@+id/radioMint"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:buttonTint="@color/pastel_mint" />
+                    android:checked='@{"#C1E1C1".equals(habitModel.color)}'
+                    android:buttonTint="@color/pastel_mint"/>
 
             </RadioGroup>
 
@@ -135,7 +156,8 @@
                 android:layout_height="48dp"
                 android:text="-"
                 android:textSize="24sp"
-                android:backgroundTint="@color/pastel_lavender" />
+                android:backgroundTint="@color/pastel_lavender"
+                android:onClick="@{() -> eventsHandler.onDecrease()}"/>
 
             <TextView
                 android:id="@+id/textViewTargetDays"
@@ -143,7 +165,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:text="7"
+                android:text="@{String.valueOf(habitModel.targetDays)}"
                 android:textColor="@color/text_primary"
                 android:textSize="24sp" />
 
@@ -153,8 +175,36 @@
                 android:layout_height="48dp"
                 android:text="+"
                 android:textSize="24sp"
-                android:backgroundTint="@color/pastel_lavender" />
+                android:backgroundTint="@color/pastel_lavender"
+                android:onClick="@{() -> eventsHandler.onIncrease()}"/>
 
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@{`Напоминать каждый день в: ` + addHabitViewModel.notificationTime}"
+            android:textColor="@color/text_primary"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <!--<TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="24sp" />-->
+
+            <Button
+                android:id="@+id/pick_time_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/notification_pick_time_btn_txt" />
         </LinearLayout>
 
         <Button
@@ -165,8 +215,10 @@
             android:backgroundTint="@color/accent_color"
             android:text="Сохранить привычку"
             android:textColor="@android:color/white"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:onClick="@{() -> eventsHandler.onSave(habitModel)}"/>
 
     </LinearLayout>
 
 </ScrollView>
+</layout>

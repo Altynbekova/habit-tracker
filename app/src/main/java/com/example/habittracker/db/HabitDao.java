@@ -32,4 +32,7 @@ public interface HabitDao {
 
     @Query("delete from habits where id = :id")
     void deleteHabitById(int id);
+
+    @Query("update habits set notificationTime=:time where id=:id")
+    void updateTime(int id, String time);
 }
