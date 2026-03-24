@@ -18,7 +18,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_color"
+
     android:fillViewport="true">
 
     <LinearLayout
@@ -31,17 +31,16 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/primary_color"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+
             app:title="Новая привычка"
-            app:titleTextColor="@android:color/white" />
+            />
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            app:hintTextColor="@color/text_primary">
+            >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editTextHabitName"
@@ -58,7 +57,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            app:hintTextColor="@color/text_primary">
+            >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editTextHabitDescription"
@@ -75,7 +74,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="Выберите цвет:"
-            android:textColor="@color/text_primary"
+
             android:textSize="16sp" />
 
         <LinearLayout
@@ -97,7 +96,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked='@{"#AEC6CF".equals(habitModel.color)}'
-                    android:buttonTint="@color/accent_color"/>
+                    />
 
                 <RadioButton
                     android:id="@+id/radioGreen"
@@ -140,7 +139,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="Цель (дней подряд):"
-            android:textColor="@color/text_primary"
+
             android:textSize="16sp" />
 
         <LinearLayout
@@ -156,7 +155,6 @@
                 android:layout_height="48dp"
                 android:text="-"
                 android:textSize="24sp"
-                android:backgroundTint="@color/pastel_lavender"
                 android:onClick="@{() -> eventsHandler.onDecrease()}"/>
 
             <TextView
@@ -166,7 +164,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:text="@{String.valueOf(habitModel.targetDays)}"
-                android:textColor="@color/text_primary"
+
                 android:textSize="24sp" />
 
             <Button
@@ -175,7 +173,6 @@
                 android:layout_height="48dp"
                 android:text="+"
                 android:textSize="24sp"
-                android:backgroundTint="@color/pastel_lavender"
                 android:onClick="@{() -> eventsHandler.onIncrease()}"/>
 
         </LinearLayout>
@@ -185,7 +182,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="@{`Напоминать каждый день в: ` + addHabitViewModel.notificationTime}"
-            android:textColor="@color/text_primary"
+
             android:textSize="16sp" />
 
         <LinearLayout
@@ -212,9 +209,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:backgroundTint="@color/accent_color"
+
             android:text="Сохранить привычку"
-            android:textColor="@android:color/white"
+
             android:textSize="16sp"
             android:onClick="@{() -> eventsHandler.onSave(habitModel)}"/>
 

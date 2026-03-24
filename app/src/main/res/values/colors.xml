@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Основные цвета в пастельных тонах -->
-    <color name="primary_color">#FFB6C1</color>
+    <!--<color name="primary_color">#FFB6C1</color>
     <color name="secondary_color">#FFDAC1</color>
     <color name="accent_color">#C7CEEA</color>
-    <color name="background_color">#FFF9F9</color>
+    <color name="background_color">#FFF9F9</color>-->
 
     <!-- Пастельные цвета для привычек -->
     <color name="pastel_blue">#AEC6CF</color>
@@ -16,8 +16,8 @@
     <color name="pastel_yellow">#FDFD96</color>
 
     <!-- Текст -->
-    <color name="text_primary">#4A4A4A</color>
-    <color name="text_secondary">#888888</color>
+    <!--<color name="text_primary">#4A4A4A</color>
+    <color name="text_secondary">#888888</color>-->
 
     <!-- Дополнительные -->
     <color name="streak_color">#FF9AA2</color>
