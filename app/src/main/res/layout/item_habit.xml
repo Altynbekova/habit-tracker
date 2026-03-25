@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -51,7 +51,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@{habitModel.name}"
-                        android:textColor="#4A4A4A"
                         android:textSize="18sp"
                         android:textStyle="bold" />
 
@@ -62,7 +61,6 @@
                         android:ellipsize="end"
                         android:maxLines="2"
                         android:text='@{habitModel.description, default="Описание привычки"}'
-                        android:textColor="#888888"
                         android:textSize="14sp" />
 
                 </LinearLayout>
@@ -74,7 +72,6 @@
                     android:background="@drawable/streak_background"
                     android:padding="8dp"
                     android:text="@{String.valueOf(habitModel.currentStreak)}"
-                    android:textColor="#FFFFFF"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
@@ -110,7 +107,6 @@
                     android:background="#C7CEEA"
                     android:onClick="@{() -> clickListener.onCompleteItem(habitModel)}"
                     android:text="@string/done"
-                    android:textColor="#FFFFFF"
                     android:textSize="11sp"
                     android:textStyle="bold" />
 
@@ -124,7 +120,6 @@
                     android:background="#E6E6FA"
                     android:onClick="@{() -> clickListener.onClickItem(habitModel, true)}"
                     android:text="@string/change"
-                    android:textColor="#4A4A4A"
                     android:textSize="11sp" />
 
                 <Button
@@ -136,12 +131,9 @@
                     android:background="#FFB6C1"
                     android:onClick="@{() -> clickListener.onClickItem(habitModel, false)}"
                     android:text="@string/delete"
-                    android:textColor="#FFFFFF"
                     android:textSize="11sp" />
 
             </LinearLayout>
-
         </LinearLayout>
-
     </androidx.cardview.widget.CardView>
 </layout>

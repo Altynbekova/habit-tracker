@@ -1,221 +1,208 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
+
     <data>
+
         <variable
             name="addHabitViewModel"
             type="com.example.habittracker.viewmodel.AddHabitViewModel" />
+
         <variable
             name="habitViewModel"
             type="com.example.habittracker.viewmodel.HabitViewModel" />
+
         <variable
             name="habitModel"
             type="com.example.habittracker.db.HabitModel" />
+
         <variable
             name="eventsHandler"
             type="com.example.habittracker.ui.AddHabitActivityHandler" />
     </data>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
 
-    android:fillViewport="true">
-
-    <LinearLayout
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
-
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
-            app:title="Новая привычка"
-            />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            >
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editTextHabitName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Название привычки"
-                android:maxLines="1"
-                android:text="@={habitModel.name}"/>
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            >
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editTextHabitDescription"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Описание привычки"
-                android:maxLines="3"
-                android:text="@={habitModel.description}"/>
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="Выберите цвет:"
-
-            android:textSize="16sp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal"
-            android:gravity="center">
-
-            <RadioGroup
-                android:id="@+id/radioGroupColors"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center">
-
-                <RadioButton
-                    android:id="@+id/radioBlue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked='@{"#AEC6CF".equals(habitModel.color)}'
-                    />
-
-                <RadioButton
-                    android:id="@+id/radioGreen"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:checked='@{"#B5EAD7".equals(habitModel.color)}'
-                    android:buttonTint="@color/pastel_green"/>
-
-                <RadioButton
-                    android:id="@+id/radioLavender"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:checked='@{"#E6E6FA".equals(habitModel.color)}'
-                    android:buttonTint="@color/pastel_lavender"/>
-
-                <RadioButton
-                    android:id="@+id/radioPeach"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:checked='@{"#FFD8B1".equals(habitModel.color)}'
-                    android:buttonTint="@color/pastel_peach"/>
-
-                <RadioButton
-                    android:id="@+id/radioMint"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:checked='@{"#C1E1C1".equals(habitModel.color)}'
-                    android:buttonTint="@color/pastel_mint"/>
-
-            </RadioGroup>
-
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="Цель (дней подряд):"
-
-            android:textSize="16sp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal"
-            android:gravity="center">
-
-            <Button
-                android:id="@+id/buttonDecrease"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:text="-"
-                android:textSize="24sp"
-                android:onClick="@{() -> eventsHandler.onDecrease()}"/>
-
-            <TextView
-                android:id="@+id/textViewTargetDays"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:text="@{String.valueOf(habitModel.targetDays)}"
-
-                android:textSize="24sp" />
-
-            <Button
-                android:id="@+id/buttonIncrease"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:text="+"
-                android:textSize="24sp"
-                android:onClick="@{() -> eventsHandler.onIncrease()}"/>
-
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="@{`Напоминать каждый день в: ` + addHabitViewModel.notificationTime}"
-
-            android:textSize="16sp" />
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:gravity="center">
+            android:padding="16dp">
 
-            <!--<TextView
-                android:layout_width="wrap_content"
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text=""
-                android:textSize="24sp" />-->
+                app:title="Новая привычка" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextHabitName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Название привычки"
+                    android:maxLines="1"
+                    android:text="@={habitModel.name}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextHabitDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Описание привычки"
+                    android:maxLines="3"
+                    android:text="@={habitModel.description}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Выберите цвет:"
+                android:textSize="16sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <RadioGroup
+                    android:id="@+id/radioGroupColors"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/radioBlue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked='@{"#AEC6CF".equals(habitModel.color)}' />
+
+                    <RadioButton
+                        android:id="@+id/radioGreen"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:buttonTint="@color/pastel_green"
+                        android:checked='@{"#B5EAD7".equals(habitModel.color)}' />
+
+                    <RadioButton
+                        android:id="@+id/radioLavender"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:buttonTint="@color/pastel_lavender"
+                        android:checked='@{"#E6E6FA".equals(habitModel.color)}' />
+
+                    <RadioButton
+                        android:id="@+id/radioPeach"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:buttonTint="@color/pastel_peach"
+                        android:checked='@{"#FFD8B1".equals(habitModel.color)}' />
+
+                    <RadioButton
+                        android:id="@+id/radioMint"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:buttonTint="@color/pastel_mint"
+                        android:checked='@{"#C1E1C1".equals(habitModel.color)}' />
+
+                </RadioGroup>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Цель (дней подряд):"
+                android:textSize="16sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/buttonDecrease"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:onClick="@{() -> eventsHandler.onDecrease()}"
+                    android:text="-"
+                    android:textSize="24sp" />
+
+                <TextView
+                    android:id="@+id/textViewTargetDays"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@{String.valueOf(habitModel.targetDays)}"
+                    android:textSize="24sp" />
+
+                <Button
+                    android:id="@+id/buttonIncrease"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:onClick="@{() -> eventsHandler.onIncrease()}"
+                    android:text="+"
+                    android:textSize="24sp" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@{`Напоминать каждый день в: ` + addHabitViewModel.notificationTime}"
+                android:textSize="16sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/pick_time_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/notification_pick_time_btn_txt" />
+            </LinearLayout>
 
             <Button
-                android:id="@+id/pick_time_button"
-                android:layout_width="wrap_content"
+                android:id="@+id/buttonSave"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/notification_pick_time_btn_txt" />
+                android:layout_marginTop="32dp"
+                android:onClick="@{() -> eventsHandler.onSave(habitModel)}"
+                android:text="Сохранить привычку"
+                android:textSize="16sp" />
+
         </LinearLayout>
-
-        <Button
-            android:id="@+id/buttonSave"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-
-            android:text="Сохранить привычку"
-
-            android:textSize="16sp"
-            android:onClick="@{() -> eventsHandler.onSave(habitModel)}"/>
-
-    </LinearLayout>
-
-</ScrollView>
+    </ScrollView>
 </layout>
