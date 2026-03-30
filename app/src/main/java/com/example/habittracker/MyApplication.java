@@ -7,19 +7,17 @@ import android.os.Build;
 import android.util.Log;
 
 public class MyApplication extends Application {
-    private static final String TAG = "HabitTrackerApplication";
     public static final String CHANNEL_ID = "habit_tracker_channel";
+    private static final String TAG = "HabitTrackerApplication";
 
     @Override
     public void onCreate() {
         super.onCreate();
-        // Put the code you want to execute here
         Log.d(TAG, "Application started! Executing initial code.");
-        // Example: Initialize a database, a network service, etc.
+        //add another logic, e.g. initialize a DB, a network service, etc.
 
-//        BroadcastReceiver (для запуска после перезагрузки устройства):
-//        Требует разрешения RECEIVE_BOOT_COMPLETED в манифесте.
-
+        /*BroadcastReceiver (для запуска после перезагрузки устройства):
+        Требует разрешения RECEIVE_BOOT_COMPLETED в манифесте.*/
         createNotificationChannel();
     }
 

@@ -17,8 +17,8 @@ public class SettingsViewModelFactory implements ViewModelProvider.Factory {
     @Override
     @SuppressWarnings("unchecked")
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        if (modelClass.isAssignableFrom(SettingsViewModel.class)){
-            return (T)new SettingsViewModel(themeManager);
+        if (modelClass.isAssignableFrom(SettingsViewModel.class)) {
+            return (T) new SettingsViewModel(themeManager);
         }
         //return ViewModelProvider.Factory.super.create(modelClass);
         throw new IllegalArgumentException("Unknown ViewModel class");

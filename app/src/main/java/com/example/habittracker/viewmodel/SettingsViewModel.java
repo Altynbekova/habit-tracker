@@ -16,7 +16,9 @@ public class SettingsViewModel extends ViewModel {
         themeManager.getTheme().subscribe(themeLiveData::postValue);
     }
 
-    public LiveData<Boolean> getTheme() { return themeLiveData; }
+    public LiveData<Boolean> getTheme() {
+        return themeLiveData;
+    }
 
     public void toggleTheme(boolean isDark) {
         themeManager.setTheme(isDark);

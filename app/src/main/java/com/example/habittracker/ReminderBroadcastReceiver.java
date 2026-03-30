@@ -5,10 +5,8 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 
 import androidx.annotation.RequiresPermission;
-import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
@@ -36,7 +34,8 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
 
         // Show the notification
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-        notificationManager.notify(intent.getIntExtra("NOTIFICATION_ID", -1), builder.build()); // Use a unique ID for the notification
+        notificationManager.notify(intent.getIntExtra("NOTIFICATION_ID", -1),
+                builder.build()); // Use a unique ID for the notification
     }
 }
 

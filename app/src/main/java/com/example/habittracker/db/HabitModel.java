@@ -11,6 +11,17 @@ import java.time.LocalDate;
 
 @Entity(tableName = "habits")
 public class HabitModel implements Parcelable {
+    public static final Creator<HabitModel> CREATOR = new Creator<>() {
+        @Override
+        public HabitModel createFromParcel(Parcel parcel) {
+            return new HabitModel(parcel);
+        }
+
+        @Override
+        public HabitModel[] newArray(int size) {
+            return new HabitModel[size];
+        }
+    };
     @PrimaryKey(autoGenerate = true)
     private int id;
     private String name;
@@ -153,17 +164,4 @@ public class HabitModel implements Parcelable {
             return false;
         return LocalDate.now().isEqual(LocalDate.parse(lastCompletedDate));
     }
-
-
-    public static final Creator<HabitModel> CREATOR = new Creator<>() {
-        @Override
-        public HabitModel createFromParcel(Parcel parcel) {
-            return new HabitModel(parcel);
-        }
-
-        @Override
-        public HabitModel[] newArray(int size) {
-            return new HabitModel[size];
-        }
-    };
 }

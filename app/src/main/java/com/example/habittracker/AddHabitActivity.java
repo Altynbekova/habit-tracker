@@ -14,7 +14,6 @@ import com.example.habittracker.db.HabitModel;
 import com.example.habittracker.ui.AddHabitActivityHandler;
 import com.example.habittracker.viewmodel.AddHabitViewModel;
 import com.example.habittracker.viewmodel.HabitViewModel;
-import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
 
@@ -35,11 +34,6 @@ public class AddHabitActivity extends AppCompatActivity implements AddHabitActiv
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*setContentView(R.layout.activity_add_habit);
-
-        habitViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication())
-                .create(HabitViewModel.class);*/
-
         // Inflate layout using data binding
         binding = ActivityAddHabitBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -50,12 +44,6 @@ public class AddHabitActivity extends AppCompatActivity implements AddHabitActiv
         // Bind the ViewModel to the layout
         binding.setHabitViewModel(habitViewModel);
         binding.setAddHabitViewModel(addHabitViewModel);
-
-        // Set the LiveData owner to enable lifecycle observation
-//        binding.setLifecycleOwner(this);
-
-//        initViews();
-//        setupListeners();
         model.setTargetDays(7);
 
         Intent intent = getIntent();
@@ -66,12 +54,6 @@ public class AddHabitActivity extends AppCompatActivity implements AddHabitActiv
             }
             binding.toolbar.setTitle("Редактировать привычку");
             habitId = model.getId();
-            /*try {
-                loadHabitData();
-            } catch (ExecutionException | InterruptedException e) {
-                Log.e("MainActivity", "Cannot loadHabits()");
-//                throw new RuntimeException(e);
-            }*/
         } else {
             habitId = -1;
         }
@@ -83,7 +65,8 @@ public class AddHabitActivity extends AppCompatActivity implements AddHabitActiv
 
     private void showTimePicker(HabitModel model) {
         LocalTime time;
-        if (model.getNotificationTime() == null || model.getNotificationTime().isEmpty()) {
+        if (model.getNotificationTime() == null || model.getNotificationTime().isEmpty()
+                || "--:--".equals(model.getNotificationTime())) {
             time = LocalTime.now();
         } else {
             time = LocalTime.parse(model.getNotificationTime());
@@ -104,11 +87,6 @@ public class AddHabitActivity extends AppCompatActivity implements AddHabitActiv
         });
     }
 
-    private void initViews() {
-        MaterialToolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setNavigationOnClickListener(v -> finish());
-    }
-
     private String getSelectedColor() {
         int selectedId = binding.radioGroupColors.getCheckedRadioButtonId();
 
@@ -117,37 +95,6 @@ public class AddHabitActivity extends AppCompatActivity implements AddHabitActiv
         else if (selectedId == R.id.radioLavender) return "#E6E6FA";
         else if (selectedId == R.id.radioPeach) return "#FFD8B1";
         else return "#C1E1C1";
-    }
-
-    private void loadHabitData() throws ExecutionException, InterruptedException {
-        /*if (habitId != -1) {
-            HabitModel habit = habitViewModel.getHabitById(habitId);
-            if (habit != null) {
-                editTextHabitName.setText(habit.getName());
-                editTextHabitDescription.setText(habit.getDescription());
-                targetDays = habit.getTargetDays();
-                textViewTargetDays.setText(String.valueOf(targetDays));
-
-                String habitColor = habit.getColor();
-                switch (habitColor) {
-                    case "#AEC6CF":
-                        radioGroupColors.check(R.id.radioBlue);
-                        break;
-                    case "#B5EAD7":
-                        radioGroupColors.check(R.id.radioGreen);
-                        break;
-                    case "#E6E6FA":
-                        radioGroupColors.check(R.id.radioLavender);
-                        break;
-                    case "#FFD8B1":
-                        radioGroupColors.check(R.id.radioPeach);
-                        break;
-                    case "#C1E1C1":
-                        radioGroupColors.check(R.id.radioMint);
-                        break;
-                }
-            }
-        }*/
     }
 
     @Override
@@ -179,7 +126,7 @@ public class AddHabitActivity extends AppCompatActivity implements AddHabitActiv
         if (habitId == -1) {
             habitViewModel.insertHabit(habitModel);
 
-            // Set the desired time (e.g., from user input in ToDo task)
+            // Set the desired time from user input in habit task
             LocalDateTime localDateTime = LocalDateTime.of(LocalDate.now(),
                     LocalTime.parse(habitModel.getNotificationTime()));
             // ... add other time logic as needed
