@@ -95,39 +95,40 @@
                         android:id="@+id/radioBlue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked='@{"#AEC6CF".equals(habitModel.color)}' />
+                        android:checked='@{"#AEC6CF".equals(habitModel.color)}'
+                        app:buttonTint="@color/pastel_blue"/>
 
                     <RadioButton
                         android:id="@+id/radioGreen"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
-                        android:buttonTint="@color/pastel_green"
-                        android:checked='@{"#B5EAD7".equals(habitModel.color)}' />
+                        android:checked='@{"#B5EAD7".equals(habitModel.color)}'
+                        app:buttonTint="@color/pastel_green" />
 
                     <RadioButton
                         android:id="@+id/radioLavender"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
-                        android:buttonTint="@color/pastel_lavender"
-                        android:checked='@{"#E6E6FA".equals(habitModel.color)}' />
+                        android:checked='@{"#E6E6FA".equals(habitModel.color)}'
+                        app:buttonTint="@color/pastel_lavender" />
 
                     <RadioButton
                         android:id="@+id/radioPeach"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
-                        android:buttonTint="@color/pastel_peach"
-                        android:checked='@{"#FFD8B1".equals(habitModel.color)}' />
+                        android:checked='@{"#FFD8B1".equals(habitModel.color)}'
+                        app:buttonTint="@color/pastel_peach" />
 
                     <RadioButton
                         android:id="@+id/radioMint"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
-                        android:buttonTint="@color/pastel_mint"
-                        android:checked='@{"#C1E1C1".equals(habitModel.color)}' />
+                        android:checked='@{"#C1E1C1".equals(habitModel.color)}'
+                        app:buttonTint="@color/pastel_mint" />
 
                 </RadioGroup>
 
