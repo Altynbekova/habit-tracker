@@ -3,13 +3,7 @@ package com.example.habittracker;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.icu.util.Calendar;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.RadioGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,7 +26,7 @@ import java.util.concurrent.ExecutionException;
 
 public class AddHabitActivity extends AppCompatActivity implements AddHabitActivityHandler {
 
-    HabitModel model = new HabitModel();
+    private HabitModel model = new HabitModel();
     private HabitViewModel habitViewModel;
     private AddHabitViewModel addHabitViewModel;
     private int habitId;
@@ -67,6 +61,9 @@ public class AddHabitActivity extends AppCompatActivity implements AddHabitActiv
         Intent intent = getIntent();
         if (intent.hasExtra("model")) {
             model = intent.getParcelableExtra("model");
+            if (model.getNotificationTime() != null) {
+                addHabitViewModel.notificationTime.setValue(model.getNotificationTime());
+            }
             binding.toolbar.setTitle("Редактировать привычку");
             habitId = model.getId();
             /*try {
@@ -86,10 +83,10 @@ public class AddHabitActivity extends AppCompatActivity implements AddHabitActiv
 
     private void showTimePicker(HabitModel model) {
         LocalTime time;
-        if(model.getNotificationTime() == null || model.getNotificationTime().isEmpty()){
+        if (model.getNotificationTime() == null || model.getNotificationTime().isEmpty()) {
             time = LocalTime.now();
         } else {
-          time = LocalTime.parse(model.getNotificationTime());
+            time = LocalTime.parse(model.getNotificationTime());
         }
         MaterialTimePicker picker = new MaterialTimePicker.Builder()
                 .setTimeFormat(TimeFormat.CLOCK_24H)
@@ -102,10 +99,11 @@ public class AddHabitActivity extends AppCompatActivity implements AddHabitActiv
 
         picker.addOnPositiveButtonClickListener(v -> {
             // Передаем результат в ViewModel
-            addHabitViewModel.updateTime(model.getId(),picker.getHour(), picker.getMinute());
+            addHabitViewModel.updateTime(model.getId(), picker.getHour(), picker.getMinute());
             model.setNotificationTime(LocalTime.of(picker.getHour(), picker.getMinute()).toString());
         });
     }
+
     private void initViews() {
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setNavigationOnClickListener(v -> finish());
@@ -169,25 +167,19 @@ public class AddHabitActivity extends AppCompatActivity implements AddHabitActiv
     @Override
     public void onSave(HabitModel habitModel) {
 
-        if (habitModel.getName()==null || habitModel.getName().trim().isEmpty()) {
+        if (habitModel.getName() == null || habitModel.getName().trim().isEmpty()) {
             Toast.makeText(this, "Введите название привычки", Toast.LENGTH_SHORT).show();
             return;
         }
 
         String selectedColor = getSelectedColor();
         habitModel.setColor(selectedColor);
-        habitModel.setNotificationTime(addHabitViewModel.notificationTime.get());
+        habitModel.setNotificationTime(addHabitViewModel.notificationTime.getValue());
 
         if (habitId == -1) {
             habitViewModel.insertHabit(habitModel);
 
             // Set the desired time (e.g., from user input in ToDo task)
-            /*Calendar calendar = Calendar.getInstance();
-            LocalTime now = LocalTime.now();
-            calendar.setTimeInMillis(System.currentTimeMillis());
-            calendar.set(Calendar.HOUR_OF_DAY, now.getHour());
-            calendar.set(Calendar.MINUTE,  now.plusMinutes(1).getMinute());*/
-
             LocalDateTime localDateTime = LocalDateTime.of(LocalDate.now(),
                     LocalTime.parse(habitModel.getNotificationTime()));
             // ... add other time logic as needed

@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements OnClickItemInterf
         DynamicColors.applyToActivitiesIfAvailable(getApplication());
         SettingsViewModelFactory settingsViewModelFactory = new SettingsViewModelFactory(new ThemeManager(this));
         settingsViewModel = new ViewModelProvider(this, settingsViewModelFactory).get(SettingsViewModel.class);
-        themeSwitch = findViewById(R.id.theme_switch);
+        themeSwitch = binding.themeSwitch;
         settingsViewModel.getTheme().observe(this, isDark -> {
             if (isDark) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
