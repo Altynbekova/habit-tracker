@@ -10,7 +10,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="Трекер привычек2"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:theme="@style/Theme.MyApplication2"
+        android:theme="@style/Theme.HabitTracker"
         android:supportsRtl="true">
 
         <activity

@@ -29,5 +29,5 @@
         <item name="android:windowLightStatusBar">true</item>
     </style>
 
-    <style name="Theme.MyApplication2" parent="Base.Theme.HabitTracker" />
+    <style name="Theme.HabitTracker" parent="Base.Theme.HabitTracker" />
 </resources>

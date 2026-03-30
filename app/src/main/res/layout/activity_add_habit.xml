@@ -153,7 +153,8 @@
                     android:layout_height="48dp"
                     android:onClick="@{() -> eventsHandler.onDecrease()}"
                     android:text="-"
-                    android:textSize="24sp" />
+                    android:textSize="24sp"
+                    style="@style/Widget.Material3.Button.TextButton"/>
 
                 <TextView
                     android:id="@+id/textViewTargetDays"
@@ -170,7 +171,8 @@
                     android:layout_height="48dp"
                     android:onClick="@{() -> eventsHandler.onIncrease()}"
                     android:text="+"
-                    android:textSize="24sp" />
+                    android:textSize="24sp"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"/>
 
             </LinearLayout>
 
