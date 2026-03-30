@@ -60,7 +60,7 @@ public class AddHabitActivity extends AppCompatActivity implements AddHabitActiv
         binding.setHabitModel(model);
         binding.setEventsHandler(this);
 
-        binding.pickTimeButton.setOnClickListener(v -> showTimePicker(model));
+        binding.notificationTimeContainer.setOnClickListener(v -> showTimePicker(model));
     }
 
     private void showTimePicker(HabitModel model) {
@@ -82,7 +82,7 @@ public class AddHabitActivity extends AppCompatActivity implements AddHabitActiv
 
         picker.addOnPositiveButtonClickListener(v -> {
             // Передаем результат в ViewModel
-            addHabitViewModel.updateTime(model.getId(), picker.getHour(), picker.getMinute());
+            addHabitViewModel.updateNotificationTime(model.getId(), picker.getHour(), picker.getMinute());
             model.setNotificationTime(LocalTime.of(picker.getHour(), picker.getMinute()).toString());
         });
     }

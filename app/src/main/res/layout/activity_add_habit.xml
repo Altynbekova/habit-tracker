@@ -96,7 +96,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checked='@{"#AEC6CF".equals(habitModel.color)}'
-                        app:buttonTint="@color/pastel_blue"/>
+                        app:buttonTint="@color/pastel_blue" />
 
                     <RadioButton
                         android:id="@+id/radioGreen"
@@ -150,12 +150,12 @@
 
                 <Button
                     android:id="@+id/buttonDecrease"
+                    style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:onClick="@{() -> eventsHandler.onDecrease()}"
                     android:text="-"
-                    android:textSize="24sp"
-                    style="@style/Widget.Material3.Button.TextButton"/>
+                    android:textSize="24sp" />
 
                 <TextView
                     android:id="@+id/textViewTargetDays"
@@ -168,33 +168,39 @@
 
                 <Button
                     android:id="@+id/buttonIncrease"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:onClick="@{() -> eventsHandler.onIncrease()}"
                     android:text="+"
-                    android:textSize="24sp"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"/>
-
+                    android:textSize="24sp" />
             </LinearLayout>
 
-            <TextView
+            <LinearLayout
+                android:id="@+id/notification_time_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="@{`Напоминать каждый день в: ` + addHabitViewModel.notificationTime}"
-                android:textSize="16sp" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground"
+                android:paddingVertical="8dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@{`Напоминать каждый день в: ` + addHabitViewModel.notificationTime}"
+                    android:textSize="16sp" />
 
-                <Button
-                    android:id="@+id/pick_time_button"
+                <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/notification_pick_time_btn_txt" />
+                    android:contentDescription="Edit item"
+                    android:src="@drawable/edit_24px"
+                    app:tint="?attr/colorPrimary" />
             </LinearLayout>
 
             <Button

@@ -18,7 +18,7 @@ public class AddHabitViewModel extends AndroidViewModel {
         this.appRepo = new AppRepo(application);
     }
 
-    public void updateTime(int habitId, int hour, int minute) {
+    public void updateNotificationTime(int habitId, int hour, int minute) {
 //        String time = String.format(Locale.getDefault(), "%02d:%02d", hour, minute);
         String time = LocalTime.of(hour, minute).toString();
         notificationTime.setValue(time);
