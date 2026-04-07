@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/habitListFragment">
+
+    <fragment
+        android:id="@+id/habitListFragment"
+        android:name="com.example.habittracker.ui.HabitListFragment"
+        android:label="Трекер привычек">
+        <action
+            android:id="@+id/action_list_to_details"
+            app:destination="@id/habitDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/habitDetailFragment"
+        android:name="com.example.habittracker.ui.HabitDetailFragment"
+        android:label="Детали привычки">
+        <argument
+            android:name="habitId"
+            app:argType="integer" />
+    </fragment>
+
+</navigation>

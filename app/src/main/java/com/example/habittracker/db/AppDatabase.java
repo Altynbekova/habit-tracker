@@ -9,10 +9,24 @@ import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import com.example.habittracker.db.dao.CategoryDao;
+import com.example.habittracker.db.dao.HabitCompletionDao;
+import com.example.habittracker.db.dao.HabitDao;
+import com.example.habittracker.db.dao.ReminderDao;
+import com.example.habittracker.db.entity.Category;
+import com.example.habittracker.db.entity.Converters;
+import com.example.habittracker.db.entity.FrequencyType;
+import com.example.habittracker.db.entity.HabitCompletion;
+import com.example.habittracker.db.entity.HabitModel;
+import com.example.habittracker.db.entity.Reminder;
+import com.example.habittracker.util.Utils;
+
+import java.time.LocalDateTime;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {HabitModel.class}, exportSchema = false, version = 1)
+@Database(entities = {HabitModel.class, HabitCompletion.class, Category.class, Reminder.class},
+        exportSchema = false, version = 1)
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
     public static final String DB_NAME = "habit_database.db";
@@ -27,6 +41,13 @@ public abstract class AppDatabase extends RoomDatabase {
             super.onCreate(db);
 
             databaseWriteExecutor.execute(() -> {
+                /*db.execSQL("insert into categories (name, color) values ('Health', 16731311)");
+                db.execSQL("insert into categories (name, color) values ('Work', 16751655)");
+                db.execSQL("insert into categories (name, color) values ('Personal', 16777195)");*/
+
+                CategoryDao categoryDao = instance.categoryDao();
+                Utils.categories().forEach(c -> categoryDao.insert(c));
+
                 HabitDao dao = instance.habitDao();
 
                 HabitModel habitModel1 = new HabitModel();
@@ -34,17 +55,21 @@ public abstract class AppDatabase extends RoomDatabase {
                 habitModel1.setDescription("Утренняя зарядка 15 минут");
                 habitModel1.setColor("#B5EAD7");
                 habitModel1.setTargetDays(21);
-                habitModel1.setCompletedDays(new boolean[7]);
+                habitModel1.setCreatedAt(LocalDateTime.now());
+                habitModel1.setFrequencyType(FrequencyType.DAILY);
+                habitModel1.categoryId = 1L;
 
                 HabitModel habitModel2 = new HabitModel();
                 habitModel2.setName("Пить воду");
                 habitModel2.setDescription("Выпивать 2 литра воды в день");
                 habitModel2.setColor("#AEC6CF");
                 habitModel2.setTargetDays(30);
-                habitModel2.setCompletedDays(new boolean[7]);
+                habitModel2.setCreatedAt(LocalDateTime.now());
+                habitModel2.setFrequencyType(FrequencyType.DAILY);
+                habitModel2.categoryId = 3L;
 
-                dao.insertHabit(habitModel1);
-                dao.insertHabit(habitModel2);
+                dao.insert(habitModel1);
+                dao.insert(habitModel2);
             });
         }
     };
@@ -57,6 +82,7 @@ public abstract class AppDatabase extends RoomDatabase {
                                     AppDatabase.class,
                                     DB_NAME)
                             .addCallback(sRoomDatabaseCallback)
+//                            .fallbackToDestructiveMigration(true)
                             .build();
                 }
             }
@@ -65,4 +91,7 @@ public abstract class AppDatabase extends RoomDatabase {
     }
 
     public abstract HabitDao habitDao();
+    public abstract HabitCompletionDao habitCompletionDao();
+    public abstract CategoryDao categoryDao();
+    public abstract ReminderDao reminderDao();
 }

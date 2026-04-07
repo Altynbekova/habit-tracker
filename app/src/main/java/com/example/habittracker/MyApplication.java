@@ -6,14 +6,15 @@ import android.app.NotificationManager;
 import android.os.Build;
 import android.util.Log;
 
+import com.example.habittracker.util.Utils;
+
 public class MyApplication extends Application {
     public static final String CHANNEL_ID = "habit_tracker_channel";
-    private static final String TAG = "HabitTrackerApplication";
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(TAG, "Application started! Executing initial code.");
+        Log.d(Utils.TAG, "Application started! Executing initial code.");
         //add another logic, e.g. initialize a DB, a network service, etc.
 
         /*BroadcastReceiver (для запуска после перезагрузки устройства):

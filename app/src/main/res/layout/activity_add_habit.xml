@@ -13,7 +13,7 @@
 
         <variable
             name="habitModel"
-            type="com.example.habittracker.db.HabitModel" />
+            type="com.example.habittracker.db.entity.HabitModel" />
 
         <variable
             name="eventsHandler"

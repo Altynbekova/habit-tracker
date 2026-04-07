@@ -1,6 +1,6 @@
 package com.example.habittracker.ui;
 
-import com.example.habittracker.db.HabitModel;
+import com.example.habittracker.db.entity.HabitModel;
 
 public interface OnClickItemInterface {
     /**

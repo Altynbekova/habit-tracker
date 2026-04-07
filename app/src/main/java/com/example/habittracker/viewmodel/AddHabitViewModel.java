@@ -5,9 +5,11 @@ import android.app.Application;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.habittracker.db.entity.HabitModel;
 import com.example.habittracker.repository.AppRepo;
 
 import java.time.LocalTime;
+import java.util.concurrent.ExecutionException;
 
 public class AddHabitViewModel extends AndroidViewModel {
     public final MutableLiveData<String> notificationTime = new MutableLiveData<>("--:--");
@@ -22,6 +24,10 @@ public class AddHabitViewModel extends AndroidViewModel {
 //        String time = String.format(Locale.getDefault(), "%02d:%02d", hour, minute);
         String time = LocalTime.of(hour, minute).toString();
         notificationTime.setValue(time);
+    }
+
+    public HabitModel getHabit(int habitId) throws ExecutionException, InterruptedException {
+        return appRepo.getById(habitId);
     }
 
 }

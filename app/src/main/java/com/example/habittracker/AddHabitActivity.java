@@ -4,14 +4,16 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.habittracker.databinding.ActivityAddHabitBinding;
-import com.example.habittracker.db.HabitModel;
+import com.example.habittracker.db.entity.HabitModel;
 import com.example.habittracker.ui.AddHabitActivityHandler;
+import com.example.habittracker.util.Utils;
 import com.example.habittracker.viewmodel.AddHabitViewModel;
 import com.example.habittracker.viewmodel.HabitViewModel;
 import com.google.android.material.timepicker.MaterialTimePicker;
@@ -47,16 +49,23 @@ public class AddHabitActivity extends AppCompatActivity implements AddHabitActiv
         model.setTargetDays(7);
 
         Intent intent = getIntent();
-        if (intent.hasExtra("model")) {
-            model = intent.getParcelableExtra("model");
-            if (model.getNotificationTime() != null) {
-                addHabitViewModel.notificationTime.setValue(model.getNotificationTime());
+        if (intent.hasExtra("habitId")) {
+            habitId = intent.getIntExtra("habitId", -1);
+
+            if (habitId != -1) {
+                try {
+                    model = addHabitViewModel.getHabit(habitId);
+                    if (model.getNotificationTime() != null) {
+                        addHabitViewModel.notificationTime.setValue(model.getNotificationTime());
+                    }
+                    binding.toolbar.setTitle("Редактировать привычку");
+                } catch (ExecutionException | InterruptedException e) {
+                    Log.e(Utils.TAG, "onViewCreated: cannot observe live habit", e);
+                    throw new RuntimeException(e);
+                }
             }
-            binding.toolbar.setTitle("Редактировать привычку");
-            habitId = model.getId();
-        } else {
-            habitId = -1;
         }
+
         binding.setHabitModel(model);
         binding.setEventsHandler(this);
 
@@ -124,7 +133,7 @@ public class AddHabitActivity extends AppCompatActivity implements AddHabitActiv
         habitModel.setNotificationTime(addHabitViewModel.notificationTime.getValue());
 
         if (habitId == -1) {
-            habitViewModel.insertHabit(habitModel);
+            habitViewModel.addHabit(habitModel);
 
             // Set the desired time from user input in habit task
             LocalDateTime localDateTime = LocalDateTime.of(LocalDate.now(),

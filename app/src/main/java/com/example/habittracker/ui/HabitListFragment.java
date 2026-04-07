@@ -1,0 +1,266 @@
+package com.example.habittracker.ui;
+
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.habittracker.R;
+import com.example.habittracker.db.entity.Category;
+import com.example.habittracker.db.entity.HabitModel;
+import com.example.habittracker.util.Utils;
+import com.example.habittracker.viewmodel.HabitViewModel;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.snackbar.Snackbar;
+
+import java.lang.reflect.Field;
+import java.util.concurrent.ExecutionException;
+
+public class HabitListFragment extends Fragment {
+
+    private HabitViewModel habitViewModel;
+    private ItemAdapter adapter;
+
+    private static int getDrawableId(String fileName) throws NoSuchFieldException, IllegalAccessException {
+        Class<?> res = R.drawable.class;
+        Field field = res.getField("file name");
+        return field.getInt(null);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // Создайте простой макет fragment_habit_list.xml только с RecyclerView
+        return inflater.inflate(R.layout.fragment_habit_list, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // 1. Initialize RecyclerView & ViewModel
+        RecyclerView recyclerView = view.findViewById(R.id.recyclerViewHabits);
+        habitViewModel = new ViewModelProvider(this).get(HabitViewModel.class);
+
+        adapter = new ItemAdapter(new ItemAdapter.OnHabitClickListener() {
+            @Override
+            public void onHabitClick(HabitModel habit) {
+                Bundle bundle = new Bundle();
+                bundle.putInt("habitId", habit.getId());
+                Navigation.findNavController(view).navigate(R.id.action_list_to_details, bundle);
+            }
+
+            @Override
+            public void onCompleteClick(HabitModel habit) {
+                try {
+                    long habitCompletionInsertId = habitViewModel.markAsCompleted(habit.getId());
+                    if (habitCompletionInsertId != -1) {
+                        Snackbar.make(view, "Привычка выполнена!", Snackbar.LENGTH_SHORT).show();
+                    } else {
+                        Snackbar.make(view, "Сегодня уже выполнялась!", Snackbar.LENGTH_SHORT).show();
+                    }
+                } catch (ExecutionException | InterruptedException e) {
+                    Log.e(Utils.TAG, "Cannot mark habit as completed", e);
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        setupSwipe(recyclerView);
+
+        // 2. Observe the main Habit list (Use only the filtered list)
+        habitViewModel.filteredHabits.observe(getViewLifecycleOwner(), habits -> {
+            adapter.submitList(habits);
+        });
+
+        // 3. Dynamic Categories (Filtering)
+        ChipGroup categoryChipGroup = view.findViewById(R.id.categoryChipGroup);
+        habitViewModel.getAllCategories().observe(getViewLifecycleOwner(), categories -> {
+            categoryChipGroup.removeAllViews();
+
+            // Add "All" chip
+            Chip allChip = new Chip(getContext());
+            allChip.setText("Все");
+            allChip.setCheckable(true);
+            allChip.setId(R.id.chipAll); // Unique ID for selection
+            allChip.setTag(null);
+            allChip.setChecked(true);
+            allChip.setChipIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_all_inclusive, null));
+            allChip.setChipIconVisible(false);
+            categoryChipGroup.addView(allChip);
+
+            for (Category category : categories) {
+                Chip chip = new Chip(getContext());
+                chip.setText(category.name);
+                chip.setTag(category.id);
+                chip.setCheckable(true);
+                chip.setId(View.generateViewId());
+                chip.setChipIcon(ContextCompat.getDrawable(getContext(), Utils.drawableMap.get(category.icon)));
+                categoryChipGroup.addView(chip);
+            }
+        });
+
+        /*// Handle Category selection in one place
+        categoryChipGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
+            if (checkedIds.isEmpty()) {
+                habitViewModel.setCategory(null);
+            } else {
+                View chip = group.findViewById(checkedIds.get(0));
+                habitViewModel.setCategory((Long) chip.getTag());
+            }
+        });*/
+
+        categoryChipGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
+            if (checkedIds.isEmpty()) return;
+
+            int checkedId = checkedIds.get(0);
+
+            Chip checkedChip = group.findViewById(checkedId);
+            if (checkedId == R.id.chipAll) {
+                habitViewModel.setCategory(null); // Сброс фильтра
+            } else {
+                habitViewModel.setCategory((Long) checkedChip.getTag());
+            }
+
+            // Iterate through all children to update their specific icons/states
+            for (int i = 0; i < group.getChildCount(); i++) {
+                Chip chip = (Chip) group.getChildAt(i);
+
+                // Unselected state: Revert to default leading icon
+                // Hide icon if desired when not selected
+                chip.setChipIconVisible(checkedIds.contains(chip.getId()));
+            }
+        });
+
+        // 4. Sorting Logic
+        ChipGroup sortChipGroup = view.findViewById(R.id.sortChipGroup); // Ensure this is a separate group
+        sortChipGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
+            if (checkedIds.isEmpty()) return;
+            int id = checkedIds.get(0);
+            if (id == R.id.chipSortName) habitViewModel.setSortType(SortType.NAME);
+            else if (id == R.id.chipSortDate) habitViewModel.setSortType(SortType.DATE);
+        });
+
+        MaterialButton btnDirection = view.findViewById(R.id.btnSortDirection);
+        habitViewModel.getIsAscending().observe(getViewLifecycleOwner(), isAsc -> {
+            btnDirection.setIconResource(isAsc ? R.drawable.ic_arrow_up : R.drawable.ic_arrow_down);
+        });
+        btnDirection.setOnClickListener(v -> habitViewModel.toggleDirection());
+    }
+
+    private void setupSwipe(RecyclerView recyclerView) {
+        ColorDrawable deleteBg = new ColorDrawable(Color.RED);
+        ColorDrawable editBg = new ColorDrawable(Color.GREEN);
+        Drawable deleteIcon = ContextCompat.getDrawable(getContext(), R.drawable.ic_delete);
+        Drawable editIcon = ContextCompat.getDrawable(getContext(), R.drawable.edit_24px);
+
+        int deleteWidth = deleteIcon.getIntrinsicWidth();
+        int deleteHeight = deleteIcon.getIntrinsicHeight();
+        int editWidth = editIcon.getIntrinsicWidth();
+        int editHeight = editIcon.getIntrinsicHeight();
+
+        ItemTouchHelper.SimpleCallback swipeCallback = new ItemTouchHelper.SimpleCallback(
+                0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView rv, @NonNull RecyclerView.ViewHolder vh, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getBindingAdapterPosition();
+                // Check for NO_POSITION to avoid crashes during animations
+                if (position != RecyclerView.NO_POSITION) {
+//                    HabitModel habit = adapter.getItem(position);
+                    HabitModel habit = adapter.getCurrentList().get(position);
+
+                    if (direction == ItemTouchHelper.RIGHT) {
+                        // OPEN EDIT
+                        AddHabitSheet.newInstance(habit.getId()).show(getChildFragmentManager(), "EditTag");
+                        adapter.notifyItemChanged(position); // Reset the swiped item view
+                    } else {
+                        // DELETE/ARCHIVE (Left Swipe)
+                        habitViewModel.archiveHabit(habit.getId());
+
+                        // Add the Undo Snackbar
+                        //showUndoSnackbar(habit);
+//                    Snackbar.make(recyclerView, "Habit deleted", Snackbar.LENGTH_LONG).show();
+//                    Snackbar.make(recyclerView, "Archived " + habit.getName(), Snackbar.LENGTH_LONG)
+                        Snackbar.make(requireActivity().findViewById(R.id.main_content),
+                                        "Archived " + habit.getName(), Snackbar.LENGTH_LONG)
+                                .setAction("UNDO", v -> {
+                                    // This triggers the LiveData observer to refresh the UI
+                                    habitViewModel.restoreHabit(habit.getId());
+                                })
+                                .show();
+                    }
+                }
+            }
+
+            @Override
+            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView rv, @NonNull RecyclerView.ViewHolder vh,
+                                    float dX, float dY, int actionState, boolean isCurrentlyActive) {
+
+                View itemView = vh.itemView;
+                int itemHeight = itemView.getBottom() - itemView.getTop();
+
+                if (dX > 0) {
+                    // Swiping Right (Edit)
+                    // Draw Green deleteBg or similar for Edit
+                    editBg.setBounds(itemView.getLeft(), itemView.getTop(),
+                            itemView.getLeft() + (int) dX, itemView.getBottom());
+                    editBg.draw(c);
+
+                    int iconTop = itemView.getTop() + (itemHeight - editHeight) / 2;
+                    int iconMargin = (itemHeight - editHeight) / 2;
+                    int iconLeft = itemView.getLeft() + iconMargin;
+                    int iconRight = itemView.getLeft() + iconMargin + editWidth;
+                    int iconBottom = iconTop + editHeight;
+
+                    editIcon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
+                    editIcon.draw(c);
+
+                } else if (dX < 0) { //todo replace 'else if' with 'else'
+                    // Swiping Left (Delete)
+                    // 1. Draw the red deleteBg
+                    deleteBg.setBounds(itemView.getRight() + (int) dX, itemView.getTop(),
+                            itemView.getRight(), itemView.getBottom());
+                    deleteBg.draw(c);
+
+                    // 2. Calculate icon position and draw it
+                    int iconTop = itemView.getTop() + (itemHeight - deleteHeight) / 2;
+                    int iconMargin = (itemHeight - deleteHeight) / 2;
+                    int iconRight = itemView.getRight() - iconMargin;
+                    int iconLeft = iconRight - deleteWidth;
+                    int iconBottom = iconTop + deleteHeight;
+                    deleteIcon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
+                    deleteIcon.draw(c);
+                }
+
+                super.onChildDraw(c, rv, vh, dX, dY, actionState, isCurrentlyActive);
+            }
+        };
+
+        new ItemTouchHelper(swipeCallback).attachToRecyclerView(recyclerView);
+    }
+}

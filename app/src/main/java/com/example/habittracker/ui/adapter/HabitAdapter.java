@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.habittracker.R;
 import com.example.habittracker.databinding.ItemHabitBinding;
-import com.example.habittracker.db.HabitModel;
+import com.example.habittracker.db.entity.HabitModel;
 import com.example.habittracker.ui.OnClickItemInterface;
 
 import java.util.List;
