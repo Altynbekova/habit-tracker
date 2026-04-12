@@ -36,14 +36,12 @@ public class HabitReminderReceiver extends BroadcastReceiver {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS)
                     != PackageManager.PERMISSION_GRANTED) {
-                // We cannot ask for permission here!
-                // Just log it and stop so the app doesn't crash.
+                // cannot ask for permission here! log it and stop so the app doesn't crash
                 Log.e("HabitReminder", "Notification permission not granted. Skipping.");
                 return;
             }
         }
 
-        // 1. Get data passed from the Intent
         String habitName = intent.getStringExtra("HABIT_NAME");
         int habitId = intent.getIntExtra("HABIT_ID", 0);
         int hour = intent.getIntExtra("hour", 0);
@@ -51,16 +49,14 @@ public class HabitReminderReceiver extends BroadcastReceiver {
         AsyncTask.execute(() -> {
             HabitWithDetails details = new AppRepo(context).getHabitWithDetailsSync(habitId);
             if (details != null && details.reminder != null && details.reminder.enabled && !details.habit.isArchived) {
-                // 2. Create the Notification Channel (Required for Android 8.0+)
+                //Notification Channel (Required for Android 8.0+)
                 createNotificationChannel(context);
 
-                // 3. Set what happens when the user taps the notification
                 Intent activityIntent = new Intent(context, MainActivity.class);
                 PendingIntent contentIntent = PendingIntent.getActivity(
                         context, habitId, activityIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-                // 4. Build the notification
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                         .setSmallIcon(R.drawable.ic_notification) // Use your icon
                         .setContentTitle("Habit Reminder")
@@ -69,34 +65,28 @@ public class HabitReminderReceiver extends BroadcastReceiver {
                         .setAutoCancel(true)
                         .setContentIntent(contentIntent);
 
-                // 5. Show it
+                // show notification
                 NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
                 notificationManager.notify(habitId, builder.build());
 
             }
         });
 
-
-        // --- CALCULATION LOGIC ---
         Calendar calendar = Calendar.getInstance();
-
-        // Use this for an instant 2-minute test:
+        /*// instant 2-minute test:
         calendar.add(Calendar.MINUTE, 1);
         calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);*/
 
-    /*
-    // Regular Daily Logic (Commented out for 2-minute test)
-    calendar.set(Calendar.HOUR_OF_DAY, time.getHour());
-    calendar.set(Calendar.MINUTE, time.getMinute());
-    if (calendar.getTimeInMillis() <= System.currentTimeMillis()) {
-        calendar.add(Calendar.DAY_OF_MONTH, 1);
-    }
-    */
-        // -------------------------
+        // Regular Daily Logic (Commented out for 2-minute test)
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, minute);
+        if (calendar.getTimeInMillis() <= System.currentTimeMillis()) {
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+        }
 
-        // 2. RESCHEDULE
-//        LocalTime nextTime = LocalTime.of(hour, minute);// This makes it "Daily"
+        // RESCHEDULE
+//        LocalTime nextTime = LocalTime.of(hour, minute);// make it "Daily"
         LocalTime nextTime = LocalDateTime.ofInstant(
                         calendar.toInstant(),
                         calendar.getTimeZone().toZoneId())
@@ -128,7 +118,7 @@ public class HabitReminderReceiver extends BroadcastReceiver {
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true);
 
-        // Using habitId ensures multiple habits show separate notifications
+        // using habitId ensures multiple habits show separate notifications
         manager.notify(habitId, builder.build());*/
     }
 
