@@ -30,7 +30,7 @@ public class NotificationHelper {
         calendar.set(Calendar.MINUTE, time.getMinute());
         calendar.set(Calendar.SECOND, 0);
 
-        // If the time already passed today, schedule for tomorrow
+        // if the time already passed today, schedule for tomorrow
         if (calendar.getTimeInMillis() <= System.currentTimeMillis()) {
             calendar.add(Calendar.DAY_OF_MONTH, 1);
         }
@@ -49,7 +49,7 @@ public class NotificationHelper {
 
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                // ✅ Check if we are allowed to use EXACT alarms
+                // Check if we are allowed to use EXACT alarms
                 // Use setExactAndAllowWhileIdle for the first occurrence
                 if (alarmManager.canScheduleExactAlarms()) {
                     alarmManager.setExactAndAllowWhileIdle(
@@ -57,7 +57,7 @@ public class NotificationHelper {
                             calendar.getTimeInMillis(),
                             pendingIntent);
                 } else {
-                    // ⚠️ Fallback: Use non-exact alarm to avoid crash
+                    // Fallback: Use non-exact alarm to avoid crash
                     // This will still fire, but potentially a few minutes late
                     alarmManager.setAndAllowWhileIdle(
                             AlarmManager.RTC_WAKEUP,

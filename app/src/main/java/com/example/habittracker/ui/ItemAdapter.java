@@ -1,10 +1,8 @@
 package com.example.habittracker.ui;
 
-import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -65,7 +63,7 @@ public class ItemAdapter extends ListAdapter<HabitModel, ItemAdapter.HabitViewHo
     public void onBindViewHolder(@NonNull HabitViewHolder holder, int position) {
         HabitModel currentHabit = getItem(position);
 
-        if(currentHabit.isCompleted){
+        if (currentHabit.isCompleted) {
             int bgColor = MaterialColors.getColor(holder.cardView, com.google.android.material.R.attr.colorSecondaryContainer);
 //            holder.cardView.setBackgroundColor(com.google.android.material.R.attr.colorSecondaryContainer);
             MaterialButton completion = holder.cardView.findViewById(R.id.buttonComplete);
@@ -74,8 +72,6 @@ public class ItemAdapter extends ListAdapter<HabitModel, ItemAdapter.HabitViewHo
         holder.textViewName.setText(currentHabit.getName());
 
         /*if (currentHabit.categoryId != null) {
-            // Вы можете хранить карту Map<Long, Category> в адаптере
-            // или передавать название категории через JOIN в DAO (лучший вариант для производительности)
             holder.textViewCategory.setText(categoryMap.get(currentHabit.categoryId).name);
             holder.textViewCategory.setVisibility(View.VISIBLE);
         } else {
@@ -94,7 +90,7 @@ public class ItemAdapter extends ListAdapter<HabitModel, ItemAdapter.HabitViewHo
             holder.imageViewCategory.setVisibility(View.GONE);
         }
 
-        // Toggle icon based on status
+        // toggle icon based on status
         /*if (currentHabit.isCompleted) {
             holder.buttonComplete.setIconResource(R.drawable.ic_check_circle);
             // Optional: Change color to green when done

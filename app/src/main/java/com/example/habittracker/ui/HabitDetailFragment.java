@@ -9,13 +9,10 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -30,7 +27,6 @@ import androidx.navigation.Navigation;
 import com.example.habittracker.R;
 import com.example.habittracker.db.entity.HabitCompletion;
 import com.example.habittracker.util.NotificationHelper;
-import com.example.habittracker.util.Utils;
 import com.example.habittracker.viewmodel.HabitViewModel;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
@@ -41,7 +37,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import nl.dionsegijn.konfetti.core.Angle;
@@ -60,12 +55,12 @@ public class HabitDetailFragment extends Fragment {
     private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
-                    // Check if view still exists (fragment might have been closed)
+                    // check if view still exists (fragment might have been closed)
                     if (getView() != null) {
                         TextView textNotificationTime = getView().findViewById(R.id.textNotificationTime);
                         MaterialSwitch switchNotification = getView().findViewById(R.id.switchNotification);
 
-                        // Call your specific signature
+                        // call your specific signature
                         showTimePicker(textNotificationTime, switchNotification);
                     }
                 } else {
@@ -200,21 +195,20 @@ public class HabitDetailFragment extends Fragment {
                     .show();
         });
 
-        // Edit Button
         view.findViewById(R.id.btnEdit).setOnClickListener(v -> {
-            // Future: Open a pre-filled AddHabitSheet for editing
+            // for future open a pre-filled AddHabitSheet for editing
             AddHabitSheet editSheet = AddHabitSheet.newInstance(habitId);
             editSheet.show(getChildFragmentManager(), "EditHabitTag");
         });
 
-        // Update Streak Progress
+        // update Streak Progress
         /*habitViewModel.getHistoryForHabit(habitId).observe(getViewLifecycleOwner(), history -> {
             int currentStreak = calculateStreak(history);
             TextView textStreakCount = view.findViewById(R.id.textStreakCount);
             LinearProgressIndicator streakProgress = view.findViewById(R.id.streakProgress);
 
             textStreakCount.setText(currentStreak + " Day Streak!");
-            streakProgress.setProgress((currentStreak % 20) * 5); // Example: 20-day milestones
+            streakProgress.setProgress((currentStreak % 20) * 5);
         });*/
 
 
@@ -226,12 +220,11 @@ public class HabitDetailFragment extends Fragment {
                 float progressPercent = (target > 0) ? ((float) currentStreak / target) * 100 : 0;
                 int finalProgress = Math.min(100, (int) progressPercent);
 
-                // 2. Update UI
                 LinearProgressIndicator streakProgress = view.findViewById(R.id.streakProgress);
 //                    textStreakCount.setText(currentStreak + " / " + target + " Days");
                 streakProgress.setProgress(finalProgress, true);
 
-                // Optional: Change color if goal is reached
+                // change color if goal is reached
                 if (finalProgress >= 100) {
                     streakProgress.setIndicatorColor(Color.GREEN);
                 }
@@ -242,7 +235,7 @@ public class HabitDetailFragment extends Fragment {
         TextView textNotificationTime = view.findViewById(R.id.textNotificationTime);
         MaterialSwitch switchNotification = view.findViewById(R.id.switchNotification);
 
-        /*// 1. Observe the Habit to set the initial UI state
+        /*// observe the Habit to set the initial UI state
         try {
             habitViewModel.getLiveHabitById(habitId).observe(getViewLifecycleOwner(), habit -> {
                 if (habit != null && habit.reminderTime != null) {
@@ -265,20 +258,20 @@ public class HabitDetailFragment extends Fragment {
             }
         });
 
-        // 2. Setup the Click Listener for the Time Picker
+        // setup the Click Listener for the Time Picker
         view.findViewById(R.id.layoutNotification).setOnClickListener(v -> {
-            /*// 2. Check Notification Permission (Android 13+)
+            /*// check Notification Permission (Android 13+)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.POST_NOTIFICATIONS)
                         != PackageManager.PERMISSION_GRANTED) {
 
-                    // Trigger the launcher we created earlier
+                    // trigger the launcher created earlier
                     requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS);
                     return; // Stop here until permission is granted
                 }
             }
 
-            // 3. Permission is OK, show the Time Picker
+            // permission is OK, show the Time Picker
             showTimePicker(textNotificationTime, switchNotification);*/
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -295,17 +288,17 @@ public class HabitDetailFragment extends Fragment {
             /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) ==
                         PackageManager.PERMISSION_GRANTED) {
-                    // Already have permission
+                    // already have permission
                     showTimePicker(textNotificationTime, switchNotification);
                 } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
-                    // Explain why you need it
+                    // explain why you need it
                     new AlertDialog.Builder(requireContext())
                             .setTitle("Разрешение на уведомления")
                             .setMessage("Чтобы вы не забывали о привычке, приложению нужно разрешение на отправку уведомлений.")
                             .setPositiveButton("OK", (d, w) -> requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS))
                             .show();
                 } else {
-                    // Directly ask
+                    // directly ask
                     requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
                 }
             } else {
@@ -314,11 +307,11 @@ public class HabitDetailFragment extends Fragment {
             }*/
         });
 
-        // 3. Handle Switch toggle
+        // handle Switch toggle
         switchNotification.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            /*// You might want to enable/disable the actual AlarmManager here
+            /*// might want to enable/disable the actual AlarmManager here
 
-            // Only update if the user manually clicked it (prevents infinite loops from LiveData)
+            // only update if the user manually clicked it (prevents infinite loops from LiveData)
             if (buttonView.isPressed()) {
                 habitViewModel.updateReminderStatus(habitId, isChecked);
             }*/
@@ -330,7 +323,7 @@ public class HabitDetailFragment extends Fragment {
                 throw new RuntimeException(e);
             }*/
 
-            /*// Use buttonView.isPressed() to ensure this was a USER click,
+            /*// use buttonView.isPressed() to ensure this was a USER click,
             // not a programmatic change from a LiveData observer
             if (buttonView.isPressed()) {
                 habitViewModel.toggleReminder(habitId, isChecked);
@@ -362,19 +355,19 @@ public class HabitDetailFragment extends Fragment {
                     LocalTime selectedTime = LocalTime.of(hourOfDay, minute);
                     String formattedTime = selectedTime.format(DateTimeFormatter.ofPattern("HH:mm"));
 
-                    // Update UI
+                    // update UI
                     timeTextView.setText("Ежедневно в " + formattedTime);
                     notificationSwitch.setChecked(true);
 
-                    // Update Database via ViewModel
-                    // You'll need to create this method in your ViewModel
+                    // update DB via ViewModel
+                    // will need to create this method in ViewModel
                     /*habitViewModel.updateReminderTime(habitId, selectedTime);*/
-                    // Save to Reminder entity, NOT HabitModel
+                    // save to Reminder entity, NOT HabitModel
                     habitViewModel.setReminder(habitId, selectedTime);
 
 //                    NotificationHelper.scheduleAlarm(requireContext(), habitId, selectedTime);
-                    // 5. Schedule the actual system alarm
-                    // Assuming you have a Habit object or at least the name
+                    // schedule the actual system alarm
+                    // assuming you have a Habit object or at least the name
                     habitViewModel.getLiveHabitById(habitId).observe(getViewLifecycleOwner(), habit -> {
                         if (habit != null) {
                             NotificationHelper.scheduleAlarm(requireContext(), habitId, habit.getName(), selectedTime);
@@ -396,7 +389,7 @@ public class HabitDetailFragment extends Fragment {
         int streak = 0;
         LocalDate today = LocalDate.now();
 
-        // Simple logic: count consecutive days backwards from today
+        // simple logic: count consecutive days backwards from today
         for (int i = 0; i < history.size(); i++) {
             if (history.get(i).completionDate.equals(today.minusDays(i))) {
                 streak++;

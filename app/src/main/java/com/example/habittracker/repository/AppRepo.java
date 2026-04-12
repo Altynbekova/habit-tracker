@@ -36,16 +36,16 @@ public class AppRepo {
     private final Executor executor = Executors.newFixedThreadPool(POOL_SIZE);
     private final MutableLiveData<Boolean> isDuplicateEntry = new MutableLiveData<>();
 
-    public LiveData<Boolean> getDuplicateEntryError() {
-        return isDuplicateEntry;
-    }
-
     public AppRepo(Context context) {
         AppDatabase db = AppDatabase.getInstance(context);
         habitDao = db.habitDao();
         completionDao = db.habitCompletionDao();
         categoryDao = db.categoryDao();
         reminderDao = db.reminderDao();
+    }
+
+    public LiveData<Boolean> getDuplicateEntryError() {
+        return isDuplicateEntry;
     }
 
     public List<HabitModel> getAllHabitsFuture() throws ExecutionException, InterruptedException {
@@ -102,7 +102,7 @@ public class AppRepo {
         return future.get();
     }
 
-    public LiveData<HabitModel> getByIdLive(int habitId){
+    public LiveData<HabitModel> getByIdLive(int habitId) {
         return habitDao.getHabitLive(habitId);
     }
 

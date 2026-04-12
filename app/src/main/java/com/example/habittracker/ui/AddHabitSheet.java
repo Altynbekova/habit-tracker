@@ -1,12 +1,10 @@
 package com.example.habittracker.ui;
 
 import android.os.Bundle;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -21,14 +19,12 @@ import com.example.habittracker.R;
 import com.example.habittracker.db.entity.Category;
 import com.example.habittracker.db.entity.FrequencyType;
 import com.example.habittracker.db.entity.HabitModel;
-import com.example.habittracker.util.Utils;
 import com.example.habittracker.viewmodel.HabitViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class AddHabitSheet extends BottomSheetDialogFragment {
 

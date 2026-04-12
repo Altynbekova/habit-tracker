@@ -259,5 +259,7 @@ public class HabitViewModel extends AndroidViewModel {
         return completionStatus;
     }
 
-    public LiveData<MarkDoneResult> getMarkDoneEvent() { return markDoneEvent; }
+    public LiveData<MarkDoneResult> getMarkDoneEvent() {
+        return markDoneEvent;
+    }
 }

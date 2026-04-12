@@ -48,7 +48,6 @@ public class HabitListFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // Создайте простой макет fragment_habit_list.xml только с RecyclerView
         return inflater.inflate(R.layout.fragment_habit_list, container, false);
     }
 
@@ -56,7 +55,6 @@ public class HabitListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // 1. Initialize RecyclerView & ViewModel
         RecyclerView recyclerView = view.findViewById(R.id.recyclerViewHabits);
         habitViewModel = new ViewModelProvider(this).get(HabitViewModel.class);
 
@@ -88,17 +86,17 @@ public class HabitListFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         setupSwipe(recyclerView);
 
-        // 2. Observe the main Habit list (Use only the filtered list)
+        // observe the main Habit list (Use only the filtered list)
         habitViewModel.filteredHabits.observe(getViewLifecycleOwner(), habits -> {
             adapter.submitList(habits);
         });
 
-        // 3. Dynamic Categories (Filtering)
+        // dynamic Categories (Filtering)
         ChipGroup categoryChipGroup = view.findViewById(R.id.categoryChipGroup);
         habitViewModel.getAllCategories().observe(getViewLifecycleOwner(), categories -> {
             categoryChipGroup.removeAllViews();
 
-            // Add "All" chip
+            // add "All" chip
             Chip allChip = new Chip(getContext());
             allChip.setText("Все");
             allChip.setCheckable(true);
@@ -121,7 +119,7 @@ public class HabitListFragment extends Fragment {
             }
         });
 
-        /*// Handle Category selection in one place
+        /*// handle Category selection in one place
         categoryChipGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
             if (checkedIds.isEmpty()) {
                 habitViewModel.setCategory(null);
@@ -143,7 +141,7 @@ public class HabitListFragment extends Fragment {
                 habitViewModel.setCategory((Long) checkedChip.getTag());
             }
 
-            // Iterate through all children to update their specific icons/states
+            // iterate through all children to update their specific icons/states
             /*for (int i = 0; i < group.getChildCount(); i++) {
                 Chip chip = (Chip) group.getChildAt(i);
 
@@ -153,8 +151,8 @@ public class HabitListFragment extends Fragment {
             }*/
         });
 
-        // 4. Sorting Logic
-        ChipGroup sortChipGroup = view.findViewById(R.id.sortChipGroup); // Ensure this is a separate group
+        // sorting Logic
+        ChipGroup sortChipGroup = view.findViewById(R.id.sortChipGroup); // ensure this is a separate group
         sortChipGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
             if (checkedIds.isEmpty()) return;
             int id = checkedIds.get(0);
@@ -194,20 +192,20 @@ public class HabitListFragment extends Fragment {
 
                 HabitModel habit = adapter.getCurrentList().get(position);
 
-                // Check your completion logic here (adjust field name as per your model)
+                // check completion logic here (adjust field name as per the model)
                 if (habit.isCompleted) {
-                    // Only allow swiping LEFT if completed
+                    // only allow swiping LEFT if completed
                     return makeMovementFlags(0, ItemTouchHelper.LEFT);
                 }
 
-                // Allow both directions for non-completed habits
+                // allow both directions for non-completed habits
                 return super.getMovementFlags(recyclerView, viewHolder);
             }
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getBindingAdapterPosition();
-                // Check for NO_POSITION to avoid crashes during animations
+                // check for NO_POSITION to avoid crashes during animations
                 if (position != RecyclerView.NO_POSITION) {
 //                    HabitModel habit = adapter.getItem(position);
                     HabitModel habit = adapter.getCurrentList().get(position);
@@ -220,7 +218,7 @@ public class HabitListFragment extends Fragment {
                         // DELETE/ARCHIVE (Left Swipe)
                         habitViewModel.archiveHabit(habit.getId());
 
-                        // Add the Undo Snackbar
+                        // add the Undo Snackbar
                         //showUndoSnackbar(habit);
 //                    Snackbar.make(recyclerView, "Habit deleted", Snackbar.LENGTH_LONG).show();
 //                    Snackbar.make(recyclerView, "Archived " + habit.getName(), Snackbar.LENGTH_LONG)
@@ -230,7 +228,7 @@ public class HabitListFragment extends Fragment {
                                                 habit.getName().substring(0, 15) : habit.getName()),
                                         Snackbar.LENGTH_LONG)
                                 .setAction("Отмена", v -> {
-                                    // This triggers the LiveData observer to refresh the UI
+                                    // this triggers the LiveData observer to refresh the UI
                                     habitViewModel.restoreHabit(habit.getId());
                                     /*NotificationHelper.scheduleAlarm(requireContext(),
                                             habit.getId(), habit.getName(),
@@ -253,8 +251,8 @@ public class HabitListFragment extends Fragment {
 
                 if (dX > 0) {
                     if (habit != null && !habit.isCompleted) {
-                        // Swiping Right (Edit)
-                        // Draw Green deleteBg or similar for Edit
+                        // swiping Right - Edit
+                        // draw Green deleteBg or similar for Edit
                         editBg.setBounds(itemView.getLeft(), itemView.getTop(),
                                 itemView.getLeft() + (int) dX, itemView.getBottom());
                         editBg.draw(c);
@@ -268,19 +266,19 @@ public class HabitListFragment extends Fragment {
                         editIcon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
                         editIcon.draw(c);
                     } else {
-                        // If it IS completed, don't draw anything for dX > 0
+                        // if it IS completed, don't draw anything for dX > 0
                         // and don't call super if you want to completely block the visual offset
                         return;
                     }
 
                 } else if (dX < 0) { //todo replace 'else if' with 'else'
-                    // Swiping Left (Delete)
-                    // 1. Draw the red deleteBg
+                    // swiping Left (Delete)
+                    // drawing the red deleteBg
                     deleteBg.setBounds(itemView.getRight() + (int) dX, itemView.getTop(),
                             itemView.getRight(), itemView.getBottom());
                     deleteBg.draw(c);
 
-                    // 2. Calculate icon position and draw it
+                    // calculate icon position and draw it
                     int iconTop = itemView.getTop() + (itemHeight - deleteHeight) / 2;
                     int iconMargin = (itemHeight - deleteHeight) / 2;
                     int iconRight = itemView.getRight() - iconMargin;

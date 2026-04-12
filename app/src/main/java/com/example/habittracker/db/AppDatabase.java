@@ -91,7 +91,10 @@ public abstract class AppDatabase extends RoomDatabase {
     }
 
     public abstract HabitDao habitDao();
+
     public abstract HabitCompletionDao habitCompletionDao();
+
     public abstract CategoryDao categoryDao();
+
     public abstract ReminderDao reminderDao();
 }

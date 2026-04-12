@@ -16,7 +16,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.habittracker.databinding.ActivityMainBinding;
 import com.example.habittracker.db.entity.HabitModel;
@@ -75,12 +74,12 @@ public class MainActivity extends AppCompatActivity implements OnClickItemInterf
         FloatingActionButton fab = binding.fabAddHabit;
         ViewCompat.setOnApplyWindowInsetsListener(fab, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            // Get the current LayoutParams of the FAB
+            // get the current LayoutParams of the FAB
             CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) v.getLayoutParams();
-            // Convert 24dp (standard margin) to pixels
+            // convert 24dp standard margin to pixels
             int marginPx = (int) (24 * getResources().getDisplayMetrics().density);
 
-            // Set bottom margin: Height of Nav Bar + your desired 24dp padding
+            // Set bottom margin: Height of Nav Bar + desired 24dp padding
             params.bottomMargin = systemBars.bottom + marginPx;
             params.rightMargin = marginPx; // Keep the side margin consistent too
             v.setLayoutParams(params);

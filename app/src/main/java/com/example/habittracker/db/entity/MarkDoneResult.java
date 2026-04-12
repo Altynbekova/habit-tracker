@@ -1,7 +1,7 @@
 package com.example.habittracker.db.entity;
 
 public enum MarkDoneResult {
-    SUCCESS,        // Streak incremented
-    ALREADY_DONE,   // No change (already done today)
-    GOAL_REACHED    // TargetDays hit, habit is now completed
+    SUCCESS,        // streak incremented
+    ALREADY_DONE,   // no change (already done today)
+    GOAL_REACHED    // targetDays hit, habit is completed
 }
