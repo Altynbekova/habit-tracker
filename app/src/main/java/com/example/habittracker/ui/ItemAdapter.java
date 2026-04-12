@@ -1,5 +1,6 @@
 package com.example.habittracker.ui;
 
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,8 @@ import com.example.habittracker.db.entity.Category;
 import com.example.habittracker.db.entity.HabitModel;
 import com.example.habittracker.util.Utils;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.color.MaterialColors;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +34,8 @@ public class ItemAdapter extends ListAdapter<HabitModel, ItemAdapter.HabitViewHo
 
         @Override
         public boolean areContentsTheSame(@NonNull HabitModel oldItem, @NonNull HabitModel newItem) {
-            return oldItem.getName().equals(newItem.getName()) && oldItem.isArchived == newItem.isArchived;
+            return oldItem.getName().equals(newItem.getName()) && oldItem.isArchived == newItem.isArchived
+                    && oldItem.isCompleted == newItem.isCompleted;
         }
     };
     private static final Map<Long, Category> categoryMap = new HashMap<>(
@@ -60,6 +64,13 @@ public class ItemAdapter extends ListAdapter<HabitModel, ItemAdapter.HabitViewHo
     @Override
     public void onBindViewHolder(@NonNull HabitViewHolder holder, int position) {
         HabitModel currentHabit = getItem(position);
+
+        if(currentHabit.isCompleted){
+            int bgColor = MaterialColors.getColor(holder.cardView, com.google.android.material.R.attr.colorSecondaryContainer);
+//            holder.cardView.setBackgroundColor(com.google.android.material.R.attr.colorSecondaryContainer);
+            MaterialButton completion = holder.cardView.findViewById(R.id.buttonComplete);
+            completion.setIconResource(R.drawable.outline_check_24);
+        }
         holder.textViewName.setText(currentHabit.getName());
 
         /*if (currentHabit.categoryId != null) {
@@ -84,14 +95,14 @@ public class ItemAdapter extends ListAdapter<HabitModel, ItemAdapter.HabitViewHo
         }
 
         // Toggle icon based on status
-        if (currentHabit.isCompleted) {
+        /*if (currentHabit.isCompleted) {
             holder.buttonComplete.setIconResource(R.drawable.ic_check_circle);
             // Optional: Change color to green when done
             holder.buttonComplete.setIconTintResource(R.color.streak_fire);
         } else {
             holder.buttonComplete.setIconResource(R.drawable.ic_circle_outline);
             holder.buttonComplete.setIconTintResource(R.color.streak_color);
-        }
+        }*/
 
         holder.itemView.setOnClickListener(v -> listener.onHabitClick(currentHabit));
         holder.buttonComplete.setOnClickListener(v -> listener.onCompleteClick(currentHabit));
@@ -108,6 +119,7 @@ public class ItemAdapter extends ListAdapter<HabitModel, ItemAdapter.HabitViewHo
         private final ImageView imageViewCategory;
         private final TextView textViewName;
         private final MaterialButton buttonComplete;
+        private final MaterialCardView cardView;
 
         public HabitViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -115,6 +127,7 @@ public class ItemAdapter extends ListAdapter<HabitModel, ItemAdapter.HabitViewHo
             imageViewCategory = itemView.findViewById(R.id.imageViewHabitCategory);
             textViewName = itemView.findViewById(R.id.textViewHabitName);
             buttonComplete = itemView.findViewById(R.id.buttonComplete);
+            cardView = itemView.findViewById(R.id.habitCard);
         }
     }
 

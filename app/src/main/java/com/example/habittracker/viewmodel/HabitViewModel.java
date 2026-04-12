@@ -2,23 +2,31 @@ package com.example.habittracker.viewmodel;
 
 
 import android.app.Application;
+import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.Transformations;
 
 import com.example.habittracker.db.entity.Category;
 import com.example.habittracker.db.entity.CompletionStatus;
 import com.example.habittracker.db.entity.HabitCompletion;
 import com.example.habittracker.db.entity.HabitModel;
+import com.example.habittracker.db.entity.HabitWithDetails;
+import com.example.habittracker.db.entity.MarkDoneResult;
+import com.example.habittracker.db.entity.Reminder;
 import com.example.habittracker.repository.AppRepo;
 import com.example.habittracker.ui.SortType;
+import com.example.habittracker.util.NotificationHelper;
+import com.example.habittracker.util.SingleLiveEvent;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -33,7 +41,10 @@ public class HabitViewModel extends AndroidViewModel {
     private final MutableLiveData<Boolean> isAscending = new MutableLiveData<>(true);
     private final MutableLiveData<Long> selectedCategoryId = new MutableLiveData<>(null);
     private final MutableLiveData<String> selectedSortType = new MutableLiveData<>("NAME");
-//    public final LiveData<List<HabitModel>> habits;
+    //    public final LiveData<List<HabitModel>> habits;
+    private final MutableLiveData<String> completionStatus = new MutableLiveData<>();
+    private final SingleLiveEvent<MarkDoneResult> markDoneEvent = new SingleLiveEvent<>();
+
 
     public HabitViewModel(@NonNull Application application) {
         super(application);
@@ -105,7 +116,7 @@ public class HabitViewModel extends AndroidViewModel {
         return repository.getById(habitId);
     }
 
-    public LiveData<HabitModel> getLiveHabitById(int habitId) throws ExecutionException, InterruptedException {
+    public LiveData<HabitModel> getLiveHabitById(int habitId) {
         return repository.getByIdLive(habitId);
     }
 
@@ -130,8 +141,10 @@ public class HabitViewModel extends AndroidViewModel {
         return repository.markHabitComplete(completion);
     }
 
-    public void restoreHabit(long habitId) {
+    public void restoreHabit(int habitId) {
         repository.restoreHabit(habitId);
+        /*HabitWithDetails details = repository.getHabitWithDetailsSync(habitId);
+        NotificationHelper.scheduleAlarm(getApplication(), habitId, details.habit.getName(), details.reminder.time);*/
     }
 
     public LiveData<List<HabitCompletion>> getHistoryForHabit(int habitId) {
@@ -169,4 +182,82 @@ public class HabitViewModel extends AndroidViewModel {
     public LiveData<Boolean> getIsAscending() {
         return isAscending;
     }
+
+    public void updateReminderTime(int id, LocalTime time) {
+
+        // You'll need a method in your DAO: @Query("UPDATE habits SET reminderTime = :time WHERE id = :id")
+        repository.updateReminderTime(id, time);
+
+    }
+
+    public void setReminder(int habitId, LocalTime time) {
+        repository.setReminder(habitId, time);
+    }
+
+
+    public LiveData<Reminder> getReminderForHabit(int habitId) {
+        return repository.getReminderForHabit(habitId);
+    }
+
+    public void updateReminderStatus(int habitId, boolean isChecked) {
+        repository.updateReminderStatus(habitId, isChecked);
+    }
+
+    public LiveData<HabitWithDetails> getHabitDetail(int habitId) {
+        return repository.getHabitWithDetails(habitId);
+    }
+
+    public void toggleReminder(int habitId, boolean isChecked) {
+        // 1. Update the DB status
+        updateReminderStatus(habitId, isChecked);
+
+        // 2. Schedule or Cancel the Alarm based on the toggle
+        // We use a background thread to fetch the latest data before scheduling
+        AsyncTask.execute(() -> {
+            HabitWithDetails details = repository.getHabitWithDetailsSync(habitId);
+            if (details != null && details.reminder != null) {
+//                if (isChecked) {
+                NotificationHelper.scheduleAlarm(
+                        getApplication(),
+                        habitId,
+                        details.habit.getName(),
+                        details.reminder.time
+                );
+//                } else {
+//                    NotificationHelper.cancelAlarm(getApplication(), habitId);
+//                }
+            }
+        });
+    }
+
+    public void completeHabit(int habitId) {
+        // Observe the one-time result from the repository
+        /*repository.markHabitAsDone(habitId).observeForever(new Observer<MarkDoneResult>() {
+            @Override
+            public void onChanged(MarkDoneResult result) {
+                *//*if (wasSuccessful) {
+                    completionStatus.setValue("Great job! Streak updated.");
+                } else {
+                    completionStatus.setValue("Already done today!");
+                }*//*
+                markDoneEvent.setValue(result);
+                // Clean up to prevent leaks (since this is a one-time event)
+                repository.markHabitAsDone(habitId).removeObserver(this);
+            }
+        });*/
+        LiveData<MarkDoneResult> source = repository.markHabitAsDone(habitId);
+        source.observeForever(new Observer<MarkDoneResult>() {
+            @Override
+            public void onChanged(MarkDoneResult result) {
+                markDoneEvent.setValue(result);
+                source.removeObserver(this);
+            }
+        });
+    }
+
+    public LiveData<String> getCompletionStatus() {
+        return completionStatus;
+    }
+
+    public LiveData<MarkDoneResult> getMarkDoneEvent() { return markDoneEvent; }
 }

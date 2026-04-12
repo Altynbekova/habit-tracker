@@ -106,7 +106,7 @@ public class HabitListFragment extends Fragment {
             allChip.setTag(null);
             allChip.setChecked(true);
             allChip.setChipIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_all_inclusive, null));
-            allChip.setChipIconVisible(false);
+            allChip.setChipIconVisible(true);
             categoryChipGroup.addView(allChip);
 
             for (Category category : categories) {
@@ -114,6 +114,7 @@ public class HabitListFragment extends Fragment {
                 chip.setText(category.name);
                 chip.setTag(category.id);
                 chip.setCheckable(true);
+                chip.setChipIconVisible(true);
                 chip.setId(View.generateViewId());
                 chip.setChipIcon(ContextCompat.getDrawable(getContext(), Utils.drawableMap.get(category.icon)));
                 categoryChipGroup.addView(chip);
@@ -143,13 +144,13 @@ public class HabitListFragment extends Fragment {
             }
 
             // Iterate through all children to update their specific icons/states
-            for (int i = 0; i < group.getChildCount(); i++) {
+            /*for (int i = 0; i < group.getChildCount(); i++) {
                 Chip chip = (Chip) group.getChildAt(i);
 
                 // Unselected state: Revert to default leading icon
                 // Hide icon if desired when not selected
                 chip.setChipIconVisible(checkedIds.contains(chip.getId()));
-            }
+            }*/
         });
 
         // 4. Sorting Logic
@@ -187,6 +188,23 @@ public class HabitListFragment extends Fragment {
             }
 
             @Override
+            public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+                int position = viewHolder.getBindingAdapterPosition();
+                if (position == RecyclerView.NO_POSITION) return 0;
+
+                HabitModel habit = adapter.getCurrentList().get(position);
+
+                // Check your completion logic here (adjust field name as per your model)
+                if (habit.isCompleted) {
+                    // Only allow swiping LEFT if completed
+                    return makeMovementFlags(0, ItemTouchHelper.LEFT);
+                }
+
+                // Allow both directions for non-completed habits
+                return super.getMovementFlags(recyclerView, viewHolder);
+            }
+
+            @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getBindingAdapterPosition();
                 // Check for NO_POSITION to avoid crashes during animations
@@ -206,11 +224,17 @@ public class HabitListFragment extends Fragment {
                         //showUndoSnackbar(habit);
 //                    Snackbar.make(recyclerView, "Habit deleted", Snackbar.LENGTH_LONG).show();
 //                    Snackbar.make(recyclerView, "Archived " + habit.getName(), Snackbar.LENGTH_LONG)
-                        Snackbar.make(requireActivity().findViewById(R.id.main_content),
-                                        "Archived " + habit.getName(), Snackbar.LENGTH_LONG)
-                                .setAction("UNDO", v -> {
+                        Snackbar.make(
+                                        requireActivity().findViewById(R.id.main_content),
+                                        "Архивировано: " + (habit.getName().length() > 15 ?
+                                                habit.getName().substring(0, 15) : habit.getName()),
+                                        Snackbar.LENGTH_LONG)
+                                .setAction("Отмена", v -> {
                                     // This triggers the LiveData observer to refresh the UI
                                     habitViewModel.restoreHabit(habit.getId());
+                                    /*NotificationHelper.scheduleAlarm(requireContext(),
+                                            habit.getId(), habit.getName(),
+                                            habitViewModel.getReminderForHabit(habit.getId()).getValue().time);*///todo delete
                                 })
                                 .show();
                     }
@@ -224,21 +248,30 @@ public class HabitListFragment extends Fragment {
                 View itemView = vh.itemView;
                 int itemHeight = itemView.getBottom() - itemView.getTop();
 
+                int position = vh.getBindingAdapterPosition();
+                HabitModel habit = (position != RecyclerView.NO_POSITION) ? adapter.getCurrentList().get(position) : null;
+
                 if (dX > 0) {
-                    // Swiping Right (Edit)
-                    // Draw Green deleteBg or similar for Edit
-                    editBg.setBounds(itemView.getLeft(), itemView.getTop(),
-                            itemView.getLeft() + (int) dX, itemView.getBottom());
-                    editBg.draw(c);
+                    if (habit != null && !habit.isCompleted) {
+                        // Swiping Right (Edit)
+                        // Draw Green deleteBg or similar for Edit
+                        editBg.setBounds(itemView.getLeft(), itemView.getTop(),
+                                itemView.getLeft() + (int) dX, itemView.getBottom());
+                        editBg.draw(c);
 
-                    int iconTop = itemView.getTop() + (itemHeight - editHeight) / 2;
-                    int iconMargin = (itemHeight - editHeight) / 2;
-                    int iconLeft = itemView.getLeft() + iconMargin;
-                    int iconRight = itemView.getLeft() + iconMargin + editWidth;
-                    int iconBottom = iconTop + editHeight;
+                        int iconTop = itemView.getTop() + (itemHeight - editHeight) / 2;
+                        int iconMargin = (itemHeight - editHeight) / 2;
+                        int iconLeft = itemView.getLeft() + iconMargin;
+                        int iconRight = itemView.getLeft() + iconMargin + editWidth;
+                        int iconBottom = iconTop + editHeight;
 
-                    editIcon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
-                    editIcon.draw(c);
+                        editIcon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
+                        editIcon.draw(c);
+                    } else {
+                        // If it IS completed, don't draw anything for dX > 0
+                        // and don't call super if you want to completely block the visual offset
+                        return;
+                    }
 
                 } else if (dX < 0) { //todo replace 'else if' with 'else'
                     // Swiping Left (Delete)

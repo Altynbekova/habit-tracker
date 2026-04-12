@@ -1,5 +1,7 @@
 package com.example.habittracker.db.dao;
 
+import android.content.res.Resources;
+
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
@@ -9,11 +11,18 @@ import androidx.room.Query;
 import androidx.room.Transaction;
 import androidx.room.Update;
 
+import com.example.habittracker.db.entity.CompletionStatus;
 import com.example.habittracker.db.entity.HabitCompletion;
 import com.example.habittracker.db.entity.HabitModel;
 import com.example.habittracker.db.entity.HabitWithCategory;
+import com.example.habittracker.db.entity.HabitWithDetails;
+import com.example.habittracker.db.entity.MarkDoneResult;
+import com.example.habittracker.exception.HabitNotFoundException;
+import com.example.habittracker.exception.InvalidAction;
 import com.example.habittracker.ui.SortType;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Dao
@@ -96,6 +105,7 @@ public abstract class HabitDao {
 
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
+//    @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract long insertCompletion(HabitCompletion completion);
 
     @Query("SELECT * FROM habits WHERE id = :id")
@@ -127,4 +137,62 @@ public abstract class HabitDao {
         }
         return id;
     }
+
+    @Transaction
+    @Query("SELECT * FROM habits WHERE id = :habitId")
+    public abstract LiveData<HabitWithDetails> getHabitWithDetails(int habitId);
+
+    @Transaction
+    @Query("SELECT * FROM habits WHERE id = :habitId")
+    public abstract HabitWithDetails getHabitWithDetailsSync(int habitId);
+
+
+
+    @Query("SELECT COUNT(*) FROM habit_completions WHERE habitId = :habitId AND completionDate = :date AND status = 'COMPLETED'")
+    public abstract int isHabitCompletedOnDate(int habitId, String date);
+
+    @Transaction
+    public MarkDoneResult markAsDoneAndCalculateStreak(int habitId, LocalDate date)/* throws HabitNotFoundException, InvalidAction */{
+        HabitModel habit = getHabitById(habitId);
+//        if (habit == null) throw new HabitNotFoundException("Habit not found. Id="+ habitId);
+        if (habit == null || habit.isCompleted || date.toString().equals(habit.getLastCompletedDate())) {
+            return MarkDoneResult.ALREADY_DONE;
+        }
+
+        // 1. Check if already done today
+        /*String todayStr = date.toString();
+        if (todayStr.equals(habit.getLastCompletedDate())) {
+            return false; // Tells the Repository/VM that nothing changed
+//            throw new InvalidAction("Cannot mark habit as done as it has already been done today");
+        }*/
+
+        // 2. Insert the completion record
+        HabitCompletion completion = new HabitCompletion();
+        completion.habitId = habitId;
+        completion.completionDate = date;
+        completion.status = CompletionStatus.COMPLETED;
+        completion.completedAt = LocalDateTime.now();
+        insertCompletion(completion);
+
+        // 3. Calculate Streak
+        String yesterday = date.minusDays(1).toString();
+        boolean wasCompletedYesterday = isHabitCompletedOnDate(habitId, yesterday) > 0;
+
+        habit.setCurrentStreak(wasCompletedYesterday ? habit.getCurrentStreak() + 1 : 1);
+        habit.setLastCompletedDate(date.toString());
+
+        // 4. CHECK TARGET DAYS
+        MarkDoneResult result = MarkDoneResult.SUCCESS;
+        if (habit.getCurrentStreak() >= habit.getTargetDays()) {
+            habit.isCompleted = true;
+            result = MarkDoneResult.GOAL_REACHED;
+        }
+
+        // 5. Finalize update
+//        habit.setLastCompletedDate(todayStr);
+        updateHabit(habit);
+
+        return result; // Successfully updated
+    }
+
 }

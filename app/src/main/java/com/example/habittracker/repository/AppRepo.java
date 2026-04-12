@@ -13,8 +13,13 @@ import com.example.habittracker.db.dao.ReminderDao;
 import com.example.habittracker.db.entity.Category;
 import com.example.habittracker.db.entity.HabitCompletion;
 import com.example.habittracker.db.entity.HabitModel;
+import com.example.habittracker.db.entity.HabitWithDetails;
+import com.example.habittracker.db.entity.MarkDoneResult;
+import com.example.habittracker.db.entity.Reminder;
 import com.example.habittracker.ui.SortType;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -97,7 +102,7 @@ public class AppRepo {
         return future.get();
     }
 
-    public LiveData<HabitModel> getByIdLive(int habitId) throws ExecutionException, InterruptedException {
+    public LiveData<HabitModel> getByIdLive(int habitId){
         return habitDao.getHabitLive(habitId);
     }
 
@@ -154,29 +159,70 @@ public class AppRepo {
     }
 
     public LiveData<List<HabitModel>> getFilteredAndSortedHabits(Long categoryId, SortType sortType) {
-        /*if (categoryId == null) {
-            switch (sortType) {
-                case NAME_ASC:
-                    return habitDao.getAllSortedByName();
-                case DATE_NEWEST:
-                    return habitDao.getAllSortedByDate();
-                default:
-                    return habitDao.getAllSortedByStreak();
-            }
-        }*/
-
         switch (sortType) {
             case NAME:
                 return categoryId == null ? habitDao.getAllSortedByName() : habitDao.getFilteredSortedByName(categoryId);
             case DATE:
                 return categoryId == null ? habitDao.getAllSortedByDate() : habitDao.getFilteredSortedByDate(categoryId);
             default:
-//                return categoryId == null ? habitDao.getAllSortedByStreak() : habitDao.getFilteredSortedByStreak();
                 return habitDao.getAllSortedByStreak();
         }
     }
 
     public LiveData<List<HabitModel>> getFilteredSorted(Long categoryId, String sortType, int asc) {
         return habitDao.getFilteredSorted(categoryId, sortType, asc);
+    }
+
+    public void updateReminderTime(int id, LocalTime time) {
+
+    }
+
+    public void setReminder(int habitId, LocalTime time) {
+
+        executor.execute(() -> {
+            Reminder reminder = new Reminder();
+            reminder.habitId = habitId;
+            reminder.time = time;
+            reminder.enabled = true;
+            // This will insert a new one or replace the existing one for this habit
+            reminderDao.insertOrUpdate(reminder);
+        });
+    }
+
+    public LiveData<Reminder> getReminderForHabit(int habitId) {
+        return reminderDao.getReminderByHabitId(habitId);
+    }
+
+    public void updateReminderStatus(int habitId, boolean isChecked) {
+        executor.execute(() -> {
+            reminderDao.updateStatusByHabitId(habitId, isChecked);
+        });
+    }
+
+    public LiveData<HabitWithDetails> getHabitWithDetails(int habitId) {
+        return habitDao.getHabitWithDetails(habitId);
+    }
+
+    public HabitWithDetails getHabitWithDetailsSync(int habitId) {
+        return habitDao.getHabitWithDetailsSync(habitId);
+    }
+
+    public LiveData<MarkDoneResult> markHabitAsDone(int habitId) {
+/*//        MutableLiveData<Boolean> result = new MutableLiveData<>();
+        MutableLiveData<MarkDoneResult> resultLiveData = new MutableLiveData<>();
+        executor.execute(() -> {
+//            boolean wasSuccessful = habitDao.markAsDoneAndCalculateStreak(habitId, LocalDate.now());
+            MarkDoneResult result = habitDao.markAsDoneAndCalculateStreak(habitId, LocalDate.now());
+            // postValue safely handles the thread switch for you!
+//            result.postValue(wasSuccessful);
+            resultLiveData.postValue(result);
+        });
+        return resultLiveData;*/
+        MutableLiveData<MarkDoneResult> resultLiveData = new MutableLiveData<>();
+        executor.execute(() -> {
+            MarkDoneResult result = habitDao.markAsDoneAndCalculateStreak(habitId, LocalDate.now());
+            resultLiveData.postValue(result);
+        });
+        return resultLiveData;
     }
 }

@@ -3,6 +3,7 @@ package com.example.habittracker.db.entity;
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import java.time.LocalTime;
@@ -11,12 +12,13 @@ import java.time.LocalTime;
         foreignKeys = @ForeignKey(entity = HabitModel.class,
                 parentColumns = "id",
                 childColumns = "habitId",
-                onDelete = ForeignKey.CASCADE))
+                onDelete = ForeignKey.CASCADE),
+        indices = {@Index(value = {"habitId"}, unique = true)})
 public class Reminder {
     @PrimaryKey(autoGenerate = true)
     public long id;
 
-    public long habitId;
+    public int habitId;
 
     @NonNull
     public LocalTime time;

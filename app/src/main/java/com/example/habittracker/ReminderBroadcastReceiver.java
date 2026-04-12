@@ -19,7 +19,8 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
         String taskTitle = intent.getStringExtra("TASK_TITLE");
 
         // Build the notification
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, MyApplication.CHANNEL_ID)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(
+                context, MyApplication.CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notification) // Set a small icon
                 .setContentTitle("Habit Reminder")
                 .setContentText(taskTitle)

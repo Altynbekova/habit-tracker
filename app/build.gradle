@@ -31,12 +31,25 @@ android {
         dataBinding true
         viewBinding true
     }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
+    implementation libs.ext.junit
+    androidTestImplementation libs.espresso.contrib
     def room_version = "2.8.4"
     def lifecycle_version = "2.10.0"
+    def androidXTestVersion = "1.7.0"
+    def espressoVersion = "3.7.0"
+    def truthVersion = "1.7.0"
+    def robolectricVersion = "4.16"
 
+    implementation "nl.dionsegijn:konfetti-xml:2.0.5"
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
     implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version"
@@ -50,6 +63,49 @@ dependencies {
     implementation 'com.google.android.material:material:1.11.0'
 
     implementation "androidx.coordinatorlayout:coordinatorlayout:1.3.0"
+
+    testImplementation "androidx.room:room-testing:2.6.1"// Room testing
+    /*testImplementation 'org.mockito:mockito-core:5.x.x'*/
+    /*testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation 'com.h2database:h2'  // for repository tests*/
+
+    // Testing
+    androidTestImplementation "androidx.arch.core:core-testing:2.2.0" // For InstantTaskExecutorRule
+    /*androidTestImplementation "com.google.truth:truth:1.1.3" // Optional but helpful for assertions*/
+
+    //==============================================================================================
+    //==============================================================================================
+
+    // Core library
+    androidTestImplementation "androidx.test:core:$androidXTestVersion"// Required for ApplicationProvider
+
+    // AndroidJUnitRunner and JUnit Rules
+    androidTestImplementation "androidx.test:runner:$androidXTestVersion"// Test runner and rules
+    androidTestImplementation "androidx.test:rules:1.7.0"
+
+    // Assertions
+    androidTestImplementation libs.ext.junit// JUnit 4 support for AndroidX
+    androidTestImplementation "androidx.test.ext:truth:$truthVersion"
+
+    // Espresso dependencies
+    androidTestImplementation libs.espresso.core
+
+    androidTestImplementation "org.hamcrest:hamcrest:2.2"
+    /*androidTestImplementation 'androidx.test.espresso:espresso-contrib:$espressoVersion' {
+        exclude group: 'org.checkerframework', module: 'checker'
+    }
+    androidTestImplementation "androidx.test.espresso:espresso-intents:$espressoVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-accessibility:$espressoVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-web:$espressoVersion"
+    androidTestImplementation "androidx.test.espresso.idling:idling-concurrent:$espressoVersion"*/
+
+    // The following Espresso dependency can be either "implementation",
+    // or "androidTestImplementation",depending on whether you want the
+    // dependency to appear on your APK’"s compile classpath or the test APK classpath.
+//    androidTestImplementation "androidx.test.espresso:espresso-idling-resource:$espressoVersion"
+
+    testImplementation("org.robolectric:robolectric:$robolectricVersion")
 
     implementation libs.appcompat
     implementation libs.material

@@ -141,12 +141,12 @@ public class AddHabitActivity extends AppCompatActivity implements AddHabitActiv
             // ... add other time logic as needed
 
             Intent intent = new Intent(this, ReminderBroadcastReceiver.class);
-            intent.putExtra("TASK_TITLE", habitModel.getName()); // Pass task data
-            intent.putExtra("NOTIFICATION_ID", habitModel.getId()); // Pass notification id
+            intent.putExtra("TASK_TITLE", habitModel.getName());
+            intent.putExtra("NOTIFICATION_ID", habitModel.getId());
             PendingIntent pendingIntent = PendingIntent.getBroadcast(
                     this, habitModel.getId(),
                     intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE); // Use a unique ID for each task
+                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
             AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
             // Use setExact() for accurate timing, setRepeating() for recurring tasks

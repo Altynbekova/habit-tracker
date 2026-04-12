@@ -8,6 +8,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -24,6 +28,7 @@ import com.example.habittracker.viewmodel.HabitViewModel;
 import com.example.habittracker.viewmodel.SettingsViewModel;
 import com.example.habittracker.viewmodel.SettingsViewModelFactory;
 import com.google.android.material.color.DynamicColors;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.materialswitch.MaterialSwitch;
 
 import java.time.LocalDate;
@@ -67,20 +72,44 @@ public class MainActivity extends AppCompatActivity implements OnClickItemInterf
         // Настройка ActionBar для отображения стрелки "Назад"
         NavigationUI.setupActionBarWithNavController(this, navController);
 
-        binding.fabAddHabit.setOnClickListener(v -> {
-            AddHabitSheet addHabitSheet = new AddHabitSheet();
-            addHabitSheet.show(getSupportFragmentManager(), "AddHabitTag");//todo remove -Tag ending from AddHabitTag
+        FloatingActionButton fab = binding.fabAddHabit;
+        ViewCompat.setOnApplyWindowInsetsListener(fab, (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            // Get the current LayoutParams of the FAB
+            CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) v.getLayoutParams();
+            // Convert 24dp (standard margin) to pixels
+            int marginPx = (int) (24 * getResources().getDisplayMetrics().density);
+
+            // Set bottom margin: Height of Nav Bar + your desired 24dp padding
+            params.bottomMargin = systemBars.bottom + marginPx;
+            params.rightMargin = marginPx; // Keep the side margin consistent too
+            v.setLayoutParams(params);
+
+            return insets;
         });
+
+        navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+            if (destination.getId() == R.id.habitListFragment) { // Replace with your actual start destination ID
+                fab.show();
+            } else {
+                fab.hide();
+            }
+        });
+
+        fab.setOnClickListener(v -> {
+            AddHabitSheet addHabitSheet = new AddHabitSheet();
+            addHabitSheet.show(getSupportFragmentManager(), "AddHabitTag");//todo replace AddHabitTag with AddHabitSheet.class.getSimpleName()
+        });
+
 
         DynamicColors.applyToActivitiesIfAvailable(getApplication());
         SettingsViewModelFactory settingsViewModelFactory = new SettingsViewModelFactory(new ThemeManager(this));
         settingsViewModel = new ViewModelProvider(this, settingsViewModelFactory).get(SettingsViewModel.class);
         themeSwitch = binding.themeSwitch;
         settingsViewModel.getTheme().observe(this, isDark -> {
-            if (isDark) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            int targetMode = isDark ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO;
+            if (AppCompatDelegate.getDefaultNightMode() != targetMode) {
+                AppCompatDelegate.setDefaultNightMode(targetMode);
             }
             themeSwitch.setChecked(isDark);
         });
