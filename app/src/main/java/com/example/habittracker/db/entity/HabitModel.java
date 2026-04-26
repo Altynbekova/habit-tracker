@@ -18,15 +18,15 @@ import java.time.LocalTime;
 public class HabitModel {
     @NonNull
     @ColumnInfo(defaultValue = "'DAILY'")
-    public FrequencyType frequencyType;
+    public FrequencyType frequencyType;//todo delete
     @ColumnInfo(index = true)
     public Long categoryId;
-    public String icon;
+    public String icon;//todo delete
     public boolean isArchived = false;
     @NonNull
     @ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
     public LocalDateTime createdAt;
-    public LocalTime reminderTime;
+    public LocalTime reminderTime;//todo delete
     public boolean isCompleted = false;
     @PrimaryKey(autoGenerate = true)
     private int id;
@@ -34,11 +34,11 @@ public class HabitModel {
     @ColumnInfo(index = true)
     private String name;
     private String description;
-    private String color;
+    private String color;//todo delete
     private int targetDays;
     private int currentStreak;
-    private String lastCompletedDate = "";
-    private String notificationTime = "";
+    private String lastCompletedDate = "";//todo delete
+    private String notificationTime = "";//todo delete
 
     public HabitModel() {
     }

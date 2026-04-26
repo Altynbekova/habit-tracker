@@ -27,10 +27,10 @@ public class HabitCompletion {
     @NonNull
     public CompletionStatus status; // COMPLETED, PARTIAL, SKIPPED
 
-    public float partialValue; // 0–100%
+    public float partialValue; // 0–100%//todo delete
 
     public LocalDateTime completedAt;
-    private String note;
+    private String note;//todo delete
 
     /*public Long getId() {
         return id;
