@@ -48,7 +48,8 @@ public class HabitReminderReceiver extends BroadcastReceiver {
         int minute = intent.getIntExtra("minute", 0);
         AsyncTask.execute(() -> {
             HabitWithDetails details = new AppRepo(context).getHabitWithDetailsSync(habitId);
-            if (details != null && details.reminder != null && details.reminder.enabled && !details.habit.isArchived) {
+            if (details != null && details.reminder != null && details.reminder.isEnabled() &&
+                    !details.habit.isArchived) {
                 //Notification Channel (Required for Android 8.0+)
                 createNotificationChannel(context);
 

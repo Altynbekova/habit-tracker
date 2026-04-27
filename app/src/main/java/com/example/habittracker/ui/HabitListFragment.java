@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +23,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.habittracker.R;
 import com.example.habittracker.db.entity.Category;
 import com.example.habittracker.db.entity.HabitModel;
+import com.example.habittracker.ui.adapter.ItemAdapter;
+import com.example.habittracker.util.NotificationHelper;
 import com.example.habittracker.util.Utils;
 import com.example.habittracker.viewmodel.HabitViewModel;
 import com.google.android.material.button.MaterialButton;
@@ -31,19 +32,21 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.lang.reflect.Field;
-import java.util.concurrent.ExecutionException;
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+
+import nl.dionsegijn.konfetti.core.Angle;
+import nl.dionsegijn.konfetti.core.PartyFactory;
+import nl.dionsegijn.konfetti.core.Position;
+import nl.dionsegijn.konfetti.core.Spread;
+import nl.dionsegijn.konfetti.core.emitter.Emitter;
+import nl.dionsegijn.konfetti.core.emitter.EmitterConfig;
+import nl.dionsegijn.konfetti.xml.KonfettiView;
 
 public class HabitListFragment extends Fragment {
 
     private HabitViewModel habitViewModel;
     private ItemAdapter adapter;
-
-    private static int getDrawableId(String fileName) throws NoSuchFieldException, IllegalAccessException {
-        Class<?> res = R.drawable.class;
-        Field field = res.getField("file name");
-        return field.getInt(null);
-    }
 
     @Nullable
     @Override
@@ -68,17 +71,26 @@ public class HabitListFragment extends Fragment {
 
             @Override
             public void onCompleteClick(HabitModel habit) {
-                try {
-                    long habitCompletionInsertId = habitViewModel.markAsCompleted(habit.getId());
-                    if (habitCompletionInsertId != -1) {
-                        Snackbar.make(view, "Привычка выполнена!", Snackbar.LENGTH_SHORT).show();
-                    } else {
-                        Snackbar.make(view, "Сегодня уже выполнялась!", Snackbar.LENGTH_SHORT).show();
+
+                habitViewModel.getMarkDoneEvent().observe(getViewLifecycleOwner(), result -> {
+                    if (result == null) return;
+
+                    switch (result) {
+                        case SUCCESS:
+                            Snackbar.make(view, "Привычка выполнена!", Snackbar.LENGTH_SHORT).show();
+                            break;
+                        case GOAL_REACHED:
+                            showConfettiAnimation();
+                            NotificationHelper.cancelAlarm(view.getContext(), habit.getId());
+                            Snackbar.make(view, "Цель достигнута!", Snackbar.LENGTH_SHORT).show();
+                            break;
+                        case ALREADY_DONE:
+                            Snackbar.make(view, "Сегодня уже выполнялась!", Snackbar.LENGTH_SHORT).show();
+                            break;
                     }
-                } catch (ExecutionException | InterruptedException e) {
-                    Log.e(Utils.TAG, "Cannot mark habit as completed", e);
-                    throw new RuntimeException(e);
-                }
+                });
+
+                habitViewModel.completeHabit(habit.getId());
             }
         });
 
@@ -119,16 +131,6 @@ public class HabitListFragment extends Fragment {
             }
         });
 
-        /*// handle Category selection in one place
-        categoryChipGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
-            if (checkedIds.isEmpty()) {
-                habitViewModel.setCategory(null);
-            } else {
-                View chip = group.findViewById(checkedIds.get(0));
-                habitViewModel.setCategory((Long) chip.getTag());
-            }
-        });*/
-
         categoryChipGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
             if (checkedIds.isEmpty()) return;
 
@@ -140,15 +142,6 @@ public class HabitListFragment extends Fragment {
             } else {
                 habitViewModel.setCategory((Long) checkedChip.getTag());
             }
-
-            // iterate through all children to update their specific icons/states
-            /*for (int i = 0; i < group.getChildCount(); i++) {
-                Chip chip = (Chip) group.getChildAt(i);
-
-                // Unselected state: Revert to default leading icon
-                // Hide icon if desired when not selected
-                chip.setChipIconVisible(checkedIds.contains(chip.getId()));
-            }*/
         });
 
         // sorting Logic
@@ -192,9 +185,8 @@ public class HabitListFragment extends Fragment {
 
                 HabitModel habit = adapter.getCurrentList().get(position);
 
-                // check completion logic here (adjust field name as per the model)
                 if (habit.isCompleted) {
-                    // only allow swiping LEFT if completed
+                    // only allow swiping LEFT
                     return makeMovementFlags(0, ItemTouchHelper.LEFT);
                 }
 
@@ -207,7 +199,6 @@ public class HabitListFragment extends Fragment {
                 int position = viewHolder.getBindingAdapterPosition();
                 // check for NO_POSITION to avoid crashes during animations
                 if (position != RecyclerView.NO_POSITION) {
-//                    HabitModel habit = adapter.getItem(position);
                     HabitModel habit = adapter.getCurrentList().get(position);
 
                     if (direction == ItemTouchHelper.RIGHT) {
@@ -218,10 +209,6 @@ public class HabitListFragment extends Fragment {
                         // DELETE/ARCHIVE (Left Swipe)
                         habitViewModel.archiveHabit(habit.getId());
 
-                        // add the Undo Snackbar
-                        //showUndoSnackbar(habit);
-//                    Snackbar.make(recyclerView, "Habit deleted", Snackbar.LENGTH_LONG).show();
-//                    Snackbar.make(recyclerView, "Archived " + habit.getName(), Snackbar.LENGTH_LONG)
                         Snackbar.make(
                                         requireActivity().findViewById(R.id.main_content),
                                         "Архивировано: " + (habit.getName().length() > 15 ?
@@ -230,9 +217,6 @@ public class HabitListFragment extends Fragment {
                                 .setAction("Отмена", v -> {
                                     // this triggers the LiveData observer to refresh the UI
                                     habitViewModel.restoreHabit(habit.getId());
-                                    /*NotificationHelper.scheduleAlarm(requireContext(),
-                                            habit.getId(), habit.getName(),
-                                            habitViewModel.getReminderForHabit(habit.getId()).getValue().time);*///todo delete
                                 })
                                 .show();
                     }
@@ -252,7 +236,7 @@ public class HabitListFragment extends Fragment {
                 if (dX > 0) {
                     if (habit != null && !habit.isCompleted) {
                         // swiping Right - Edit
-                        // draw Green deleteBg or similar for Edit
+                        // draw Green deleteBg for Edit
                         editBg.setBounds(itemView.getLeft(), itemView.getTop(),
                                 itemView.getLeft() + (int) dX, itemView.getBottom());
                         editBg.draw(c);
@@ -267,7 +251,7 @@ public class HabitListFragment extends Fragment {
                         editIcon.draw(c);
                     } else {
                         // if it IS completed, don't draw anything for dX > 0
-                        // and don't call super if you want to completely block the visual offset
+                        // and don't call super to completely block the visual offset
                         return;
                     }
 
@@ -293,5 +277,21 @@ public class HabitListFragment extends Fragment {
         };
 
         new ItemTouchHelper(swipeCallback).attachToRecyclerView(recyclerView);
+    }
+
+
+    private void showConfettiAnimation() {
+        final KonfettiView konfettiView = getView().findViewById(R.id.konfettiView);
+
+        EmitterConfig emitterConfig = new Emitter(3L, TimeUnit.SECONDS).perSecond(50);
+        konfettiView.start(
+                new PartyFactory(emitterConfig)
+                        .angle(Angle.TOP)
+                        .spread(Spread.WIDE)
+                        .setSpeedBetween(10f, 30f)
+                        .colors(Arrays.asList(0xfce18a, 0xff726d, 0xf4306d, 0xb48def))
+                        .position(new Position.Relative(0.5, 0.3)) // Top center
+                        .build()
+        );
     }
 }

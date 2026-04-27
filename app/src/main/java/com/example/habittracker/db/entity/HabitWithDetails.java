@@ -9,14 +9,12 @@ public class HabitWithDetails {
     @Embedded
     public HabitModel habit;
 
-    // 1-to-1: HabitModel.categoryId -> Category.id
     @Relation(
             parentColumn = "categoryId",
             entityColumn = "id"
     )
     public Category category;
 
-    // 1-to-Many: HabitModel.id -> Reminder.habitId
     @Relation(
             parentColumn = "id",
             entityColumn = "habitId"

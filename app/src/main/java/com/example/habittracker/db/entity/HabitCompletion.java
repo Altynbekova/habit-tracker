@@ -15,36 +15,48 @@ import java.time.LocalDateTime;
                 childColumns = "habitId",
                 onDelete = ForeignKey.CASCADE))
 public class HabitCompletion {
-    /*@PrimaryKey(autoGenerate = true)
-    private Long id;*/
     @ColumnInfo(index = true)
-    public int habitId;
+    private int habitId;
 
     @NonNull
-//    @ColumnInfo(index = true)
-    public LocalDate completionDate;
+    private LocalDate completionDate;
 
     @NonNull
-    public CompletionStatus status; // COMPLETED, PARTIAL, SKIPPED
+    private CompletionStatus status;
 
-    public float partialValue; // 0–100%//todo delete
+    private LocalDateTime completedAt;
 
-    public LocalDateTime completedAt;
-    private String note;//todo delete
-
-    /*public Long getId() {
-        return id;
+    public int getHabitId() {
+        return habitId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }*/
-
-    public String getNote() {
-        return note;
+    public void setHabitId(int habitId) {
+        this.habitId = habitId;
     }
 
-    public void setNote(String note) {
-        this.note = note;
+    @NonNull
+    public LocalDate getCompletionDate() {
+        return completionDate;
+    }
+
+    public void setCompletionDate(@NonNull LocalDate completionDate) {
+        this.completionDate = completionDate;
+    }
+
+    @NonNull
+    public CompletionStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(@NonNull CompletionStatus status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getCompletedAt() {
+        return completedAt;
+    }
+
+    public void setCompletedAt(LocalDateTime completedAt) {
+        this.completedAt = completedAt;
     }
 }

@@ -16,7 +16,7 @@ public class DataBindingAdapter {
                 int parsedColor = Color.parseColor(color);
                 view.setBackgroundColor(parsedColor);
             } catch (IllegalArgumentException e) {
-                view.setBackgroundColor(ContextCompat.getColor(view.getContext(), R.color.pastel_blue));
+                view.setBackgroundColor(ContextCompat.getColor(view.getContext(), com.google.android.material.R.color.material_dynamic_neutral50));
             }
         }
     }

@@ -16,6 +16,7 @@ import com.example.habittracker.db.entity.Category;
 import com.example.habittracker.db.entity.CompletionStatus;
 import com.example.habittracker.db.entity.HabitCompletion;
 import com.example.habittracker.db.entity.HabitModel;
+import com.example.habittracker.db.entity.HabitWithCategory;
 import com.example.habittracker.db.entity.HabitWithDetails;
 import com.example.habittracker.db.entity.MarkDoneResult;
 import com.example.habittracker.db.entity.Reminder;
@@ -24,7 +25,6 @@ import com.example.habittracker.ui.SortType;
 import com.example.habittracker.util.NotificationHelper;
 import com.example.habittracker.util.SingleLiveEvent;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -120,31 +120,16 @@ public class HabitViewModel extends AndroidViewModel {
         return repository.getByIdLive(habitId);
     }
 
-    public void updateTime(int id, String time) {
-        repository.updateTime(id, time);
+    public LiveData<HabitWithCategory> getHabitWithCategory(int habitId) {
+        return repository.getHabitWithCategory(habitId);
     }
-
-    /*private HabitRepository habitRepository;
-    LiveData<List<HabitModel>> allHabits = habitRepository.getAllHabits();*/
 
     public void archiveHabit(long habitId) {
         repository.archiveHabit(habitId);
     }
 
-    public Long markAsCompleted(int habitId) throws ExecutionException, InterruptedException {
-        HabitCompletion completion = new HabitCompletion();
-        completion.habitId = habitId;
-        completion.completionDate = LocalDate.now();
-        completion.status = CompletionStatus.COMPLETED;
-        completion.completedAt = LocalDateTime.now();
-
-        return repository.markHabitComplete(completion);
-    }
-
     public void restoreHabit(int habitId) {
         repository.restoreHabit(habitId);
-        /*HabitWithDetails details = repository.getHabitWithDetailsSync(habitId);
-        NotificationHelper.scheduleAlarm(getApplication(), habitId, details.habit.getName(), details.reminder.time);*/
     }
 
     public LiveData<List<HabitCompletion>> getHistoryForHabit(int habitId) {
@@ -159,17 +144,11 @@ public class HabitViewModel extends AndroidViewModel {
         filterCategoryId.setValue(categoryId);
     }
 
-    /*public void setSortType(SortType sortType) {
-        this.sortType.setValue(sortType);
-    }*/
 
     public void setCategory(Long id) {
         selectedCategoryId.setValue(id);
     }
 
-    /*public void setCategory(String name) {
-        selectedCategoryId.setValue(repository.getCategory(name).getValue().id);
-    }*/
 
     public void setSortType(SortType type) {
         selectedSortType.setValue(type.name());
@@ -181,13 +160,6 @@ public class HabitViewModel extends AndroidViewModel {
 
     public LiveData<Boolean> getIsAscending() {
         return isAscending;
-    }
-
-    public void updateReminderTime(int id, LocalTime time) {
-
-        // You'll need a method in your DAO: @Query("UPDATE habits SET reminderTime = :time WHERE id = :id")
-        repository.updateReminderTime(id, time);
-
     }
 
     public void setReminder(int habitId, LocalTime time) {
@@ -208,11 +180,10 @@ public class HabitViewModel extends AndroidViewModel {
     }
 
     public void toggleReminder(int habitId, boolean isChecked) {
-        // 1. Update the DB status
         updateReminderStatus(habitId, isChecked);
 
-        // 2. Schedule or Cancel the Alarm based on the toggle
-        // We use a background thread to fetch the latest data before scheduling
+        // schedule or Cancel the Alarm based on the toggle
+        // use a background thread to fetch the latest data before scheduling
         AsyncTask.execute(() -> {
             HabitWithDetails details = repository.getHabitWithDetailsSync(habitId);
             if (details != null && details.reminder != null) {
@@ -221,7 +192,7 @@ public class HabitViewModel extends AndroidViewModel {
                         getApplication(),
                         habitId,
                         details.habit.getName(),
-                        details.reminder.time
+                        details.reminder.getTime()
                 );
 //                } else {
 //                    NotificationHelper.cancelAlarm(getApplication(), habitId);
@@ -231,25 +202,13 @@ public class HabitViewModel extends AndroidViewModel {
     }
 
     public void completeHabit(int habitId) {
-        // Observe the one-time result from the repository
-        /*repository.markHabitAsDone(habitId).observeForever(new Observer<MarkDoneResult>() {
-            @Override
-            public void onChanged(MarkDoneResult result) {
-                *//*if (wasSuccessful) {
-                    completionStatus.setValue("Great job! Streak updated.");
-                } else {
-                    completionStatus.setValue("Already done today!");
-                }*//*
-                markDoneEvent.setValue(result);
-                // Clean up to prevent leaks (since this is a one-time event)
-                repository.markHabitAsDone(habitId).removeObserver(this);
-            }
-        });*/
         LiveData<MarkDoneResult> source = repository.markHabitAsDone(habitId);
+        // Observe the one-time result from the repository
         source.observeForever(new Observer<MarkDoneResult>() {
             @Override
             public void onChanged(MarkDoneResult result) {
                 markDoneEvent.setValue(result);
+                // Clean up to prevent leaks (since this is a one-time event)
                 source.removeObserver(this);
             }
         });

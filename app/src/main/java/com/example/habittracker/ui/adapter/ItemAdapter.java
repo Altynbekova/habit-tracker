@@ -1,4 +1,4 @@
-package com.example.habittracker.ui;
+package com.example.habittracker.ui.adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +17,6 @@ import com.example.habittracker.db.entity.HabitModel;
 import com.example.habittracker.util.Utils;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
-import com.google.android.material.color.MaterialColors;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -64,21 +63,12 @@ public class ItemAdapter extends ListAdapter<HabitModel, ItemAdapter.HabitViewHo
         HabitModel currentHabit = getItem(position);
 
         if (currentHabit.isCompleted) {
-            int bgColor = MaterialColors.getColor(holder.cardView, com.google.android.material.R.attr.colorSecondaryContainer);
-//            holder.cardView.setBackgroundColor(com.google.android.material.R.attr.colorSecondaryContainer);
             MaterialButton completion = holder.cardView.findViewById(R.id.buttonComplete);
             completion.setIconResource(R.drawable.outline_check_24);
         }
         holder.textViewName.setText(currentHabit.getName());
 
-        /*if (currentHabit.categoryId != null) {
-            holder.textViewCategory.setText(categoryMap.get(currentHabit.categoryId).name);
-            holder.textViewCategory.setVisibility(View.VISIBLE);
-        } else {
-            holder.textViewCategory.setVisibility(View.GONE);
-        }*/
         if (currentHabit.categoryId != null && categoryMap.get(currentHabit.categoryId) != null) {
-            // Set the icon resource instead of text
             holder.imageViewCategory.setImageResource(
                     Utils.drawableMap.get(
                             categoryMap.get(currentHabit.categoryId).icon

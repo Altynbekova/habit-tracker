@@ -15,15 +15,12 @@ public class Category {
     public String name;
     public String icon;
 
-    public int color;//todo delete
-
     public Category() {
     }
 
-    public Category(@NonNull String name, String icon, int color) {
+    public Category(@NonNull String name, String icon) {
         this.name = name;
         this.icon = icon;
-        this.color = color;
     }
 }
 

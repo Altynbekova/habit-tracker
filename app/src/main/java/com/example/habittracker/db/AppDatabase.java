@@ -29,22 +29,18 @@ import java.util.concurrent.Executors;
         exportSchema = true, version = 1)
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
-    public static final String DB_NAME = "habit_database.db";
-    public static final Object LOCK = new Object();
+    private static final String DB_NAME = "habit_database.db";
+    private static final Object LOCK = new Object();
     private static final int NUMBER_OF_THREADS = 4;
-    static final ExecutorService databaseWriteExecutor =
+    private static final ExecutorService databaseWriteExecutor =
             Executors.newFixedThreadPool(NUMBER_OF_THREADS);
-    public static AppDatabase instance;
+    private static AppDatabase instance;
     private static final RoomDatabase.Callback sRoomDatabaseCallback = new RoomDatabase.Callback() {
         @Override
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);
 
             databaseWriteExecutor.execute(() -> {
-                /*db.execSQL("insert into categories (name, color) values ('Health', 16731311)");
-                db.execSQL("insert into categories (name, color) values ('Work', 16751655)");
-                db.execSQL("insert into categories (name, color) values ('Personal', 16777195)");*/
-
                 CategoryDao categoryDao = instance.categoryDao();
                 Utils.categories().forEach(c -> categoryDao.insert(c));
 

@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.habittracker.R;
+import com.example.habittracker.databinding.DialogAddHabitBinding;
 import com.example.habittracker.db.entity.Category;
 import com.example.habittracker.db.entity.FrequencyType;
 import com.example.habittracker.db.entity.HabitModel;
@@ -29,8 +30,9 @@ import java.util.List;
 public class AddHabitSheet extends BottomSheetDialogFragment {
 
     private HabitViewModel viewModel;
-    private int habitId = -1; // -1 means "New Mode"
+    private int habitId = -1; // -1 means "New"
     private HabitModel existingHabit;
+    private DialogAddHabitBinding binding;
 
     public static AddHabitSheet newInstance(int id) {
         AddHabitSheet fragment = new AddHabitSheet();
@@ -44,7 +46,7 @@ public class AddHabitSheet extends BottomSheetDialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_add_habit, container, false);
-
+        binding = DialogAddHabitBinding.inflate(getLayoutInflater());
         // Connect to the SAME ViewModel as the Fragment
         viewModel = new ViewModelProvider(requireActivity()).get(HabitViewModel.class);
 
@@ -91,12 +93,13 @@ public class AddHabitSheet extends BottomSheetDialogFragment {
         if (habitId != -1) {
             dialogTitle.setText("Редактировать");
             try {
-                viewModel.getLiveHabitById(habitId).observe(getViewLifecycleOwner(), habit -> {
-                    if (habit != null) {
-                        existingHabit = habit;
-                        inputName.setText(habit.getName());
-                        description.setText(habit.getDescription());
-                        targetDays.setText(String.valueOf(habit.getTargetDays()));
+                viewModel.getHabitWithCategory(habitId).observe(getViewLifecycleOwner(), habitWithCategory -> {
+                    if (habitWithCategory != null) {
+                        existingHabit = habitWithCategory.habit;
+                        inputName.setText(habitWithCategory.habit.getName());
+                        description.setText(habitWithCategory.habit.getDescription());
+                        targetDays.setText(String.valueOf(habitWithCategory.habit.getTargetDays()));
+                        categoryDropdown.setText(habitWithCategory.category.name, false);
                     }
                 });
             } catch (Exception e) {

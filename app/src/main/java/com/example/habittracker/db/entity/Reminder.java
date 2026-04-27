@@ -16,12 +16,45 @@ import java.time.LocalTime;
         indices = {@Index(value = {"habitId"}, unique = true)})
 public class Reminder {
     @PrimaryKey(autoGenerate = true)
-    public long id;
+    private long id;
 
-    public int habitId;
+    private int habitId;
 
     @NonNull
-    public LocalTime time;
+    private LocalTime time;
 
-    public boolean enabled = true;
+    private boolean enabled = true;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public int getHabitId() {
+        return habitId;
+    }
+
+    public void setHabitId(int habitId) {
+        this.habitId = habitId;
+    }
+
+    @NonNull
+    public LocalTime getTime() {
+        return time;
+    }
+
+    public void setTime(@NonNull LocalTime time) {
+        this.time = time;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 }

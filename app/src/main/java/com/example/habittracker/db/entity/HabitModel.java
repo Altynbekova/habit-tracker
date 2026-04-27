@@ -6,9 +6,7 @@ import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 @Entity(tableName = "habits",
         foreignKeys = @ForeignKey(entity = Category.class,
@@ -21,12 +19,10 @@ public class HabitModel {
     public FrequencyType frequencyType;//todo delete
     @ColumnInfo(index = true)
     public Long categoryId;
-    public String icon;//todo delete
     public boolean isArchived = false;
     @NonNull
     @ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
     public LocalDateTime createdAt;
-    public LocalTime reminderTime;//todo delete
     public boolean isCompleted = false;
     @PrimaryKey(autoGenerate = true)
     private int id;
@@ -37,18 +33,15 @@ public class HabitModel {
     private String color;//todo delete
     private int targetDays;
     private int currentStreak;
-    private String lastCompletedDate = "";//todo delete
-    private String notificationTime = "";//todo delete
 
     public HabitModel() {
     }
 
-    public HabitModel(String name, String description, String color, int targetDays, String notificationTime) {
+    public HabitModel(String name, String description, String color, int targetDays) {
         this.name = name;
         this.description = description;
         this.color = color;
         this.targetDays = targetDays;
-        this.notificationTime = notificationTime;
     }
 
     public int getId() {
@@ -99,22 +92,6 @@ public class HabitModel {
         this.currentStreak = currentStreak;
     }
 
-    public String getLastCompletedDate() {
-        return lastCompletedDate;
-    }
-
-    public void setLastCompletedDate(String lastCompletedDate) {
-        this.lastCompletedDate = lastCompletedDate;
-    }
-
-    public String getNotificationTime() {
-        return notificationTime;
-    }
-
-    public void setNotificationTime(String notificationTime) {
-        this.notificationTime = notificationTime;
-    }
-
     @NonNull
     public FrequencyType getFrequencyType() {
         return frequencyType;
@@ -132,14 +109,6 @@ public class HabitModel {
         this.categoryId = categoryId;
     }
 
-    public String getIcon() {
-        return icon;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
     public boolean isArchived() {
         return isArchived;
     }
@@ -155,19 +124,5 @@ public class HabitModel {
 
     public void setCreatedAt(@NonNull LocalDateTime createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public LocalTime getReminderTime() {
-        return reminderTime;
-    }
-
-    public void setReminderTime(LocalTime reminderTime) {
-        this.reminderTime = reminderTime;
-    }
-
-    public boolean isTodayCompleted() {
-        if (lastCompletedDate == null || lastCompletedDate.isEmpty())
-            return false;
-        return LocalDate.now().isEqual(LocalDate.parse(lastCompletedDate));
     }
 }
