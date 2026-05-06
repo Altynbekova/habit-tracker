@@ -80,16 +80,6 @@ public class ItemAdapter extends ListAdapter<HabitModel, ItemAdapter.HabitViewHo
             holder.imageViewCategory.setVisibility(View.GONE);
         }
 
-        // toggle icon based on status
-        /*if (currentHabit.isCompleted) {
-            holder.buttonComplete.setIconResource(R.drawable.ic_check_circle);
-            // Optional: Change color to green when done
-            holder.buttonComplete.setIconTintResource(R.color.streak_fire);
-        } else {
-            holder.buttonComplete.setIconResource(R.drawable.ic_circle_outline);
-            holder.buttonComplete.setIconTintResource(R.color.streak_color);
-        }*/
-
         holder.itemView.setOnClickListener(v -> listener.onHabitClick(currentHabit));
         holder.buttonComplete.setOnClickListener(v -> listener.onCompleteClick(currentHabit));
     }
@@ -101,7 +91,6 @@ public class ItemAdapter extends ListAdapter<HabitModel, ItemAdapter.HabitViewHo
     }
 
     static class HabitViewHolder extends RecyclerView.ViewHolder {
-        //        private final TextView textViewCategory;
         private final ImageView imageViewCategory;
         private final TextView textViewName;
         private final MaterialButton buttonComplete;
@@ -109,17 +98,11 @@ public class ItemAdapter extends ListAdapter<HabitModel, ItemAdapter.HabitViewHo
 
         public HabitViewHolder(@NonNull View itemView) {
             super(itemView);
-//            textViewCategory = itemView.findViewById(R.id.textViewHabitCategory);
             imageViewCategory = itemView.findViewById(R.id.imageViewHabitCategory);
             textViewName = itemView.findViewById(R.id.textViewHabitName);
             buttonComplete = itemView.findViewById(R.id.buttonComplete);
             cardView = itemView.findViewById(R.id.habitCard);
         }
     }
-
-    /*@Override
-    public HabitModel getItem(int position) {
-        return super.getItem(position);
-    }*/
 }
 

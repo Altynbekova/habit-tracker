@@ -17,9 +17,8 @@ public class NotificationHelper {
         Intent intent = new Intent(context, HabitReminderReceiver.class);
         intent.putExtra("HABIT_NAME", habitName);
         intent.putExtra("HABIT_ID", habitId);
-        intent.putExtra("hour", time.getHour()); // Pass time back to help reschedule
+        intent.putExtra("hour", time.getHour());
         intent.putExtra("minute", time.getMinute());
-//        intent.putExtra("enabled", enabled);
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
                 context, habitId, intent,
@@ -34,18 +33,6 @@ public class NotificationHelper {
         if (calendar.getTimeInMillis() <= System.currentTimeMillis()) {
             calendar.add(Calendar.DAY_OF_MONTH, 1);
         }
-
-        /*// Android 12+ requires checking if you can schedule exact alarms
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            if (alarmManager.canScheduleExactAlarms()) {
-                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-            } else {
-                // Fallback to inexact or ask for permission
-                alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-            }
-        } else {
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-        }*/
 
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -86,17 +73,13 @@ public class NotificationHelper {
     public static void cancelAlarm(Context context, int habitId) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-        // The Intent must match the one used to schedule the alarm
         Intent intent = new Intent(context, HabitReminderReceiver.class);
 
-        // Use the same habitId as the requestCode
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
                 context, habitId, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         if (alarmManager != null) {
-            // This stops the AlarmManager from firing the intent
             alarmManager.cancel(pendingIntent);
-            // Also cancel the PendingIntent itself to clean up
             pendingIntent.cancel();
         }
     }

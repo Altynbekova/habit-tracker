@@ -80,12 +80,11 @@
                 android:id="@+id/textStreakCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Прогресс"
+                android:text="@string/streak"
                 android:textColor="?attr/colorPrimary"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
-            <!-- Progress towards next milestone -->
             <com.google.android.material.progressindicator.LinearProgressIndicator
                 android:id="@+id/streakProgress"
                 android:layout_width="match_parent"
@@ -104,7 +103,6 @@
         android:fillViewport="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/streakCard">
-        <!-- Habit Description Section -->
         <LinearLayout
             android:id="@+id/descriptionSection"
             android:layout_width="match_parent"
@@ -114,7 +112,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="О привычке"
+                android:text="@string/about_habit"
                 android:textColor="?attr/colorPrimary"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -127,7 +125,6 @@
                 android:alpha="0.8"
                 android:lineSpacingExtra="4dp" />
 
-            <!-- Notification Setting Section -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/notificationCard"
                 style="@style/Widget.Material3.CardView.Elevated"
@@ -164,7 +161,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Уведомления"
+                            android:text="@string/notifications"
                             android:textStyle="bold" />
 
                         <TextView
@@ -172,7 +169,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:alpha="0.7"
-                            android:text="Ежедневно в 09:00"
+                            android:text="@string/notification_time_default"
                             android:textSize="12sp" />
                     </LinearLayout>
 

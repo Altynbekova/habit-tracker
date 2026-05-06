@@ -98,12 +98,10 @@ public class HabitListFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         setupSwipe(recyclerView);
 
-        // observe the main Habit list (Use only the filtered list)
         habitViewModel.filteredHabits.observe(getViewLifecycleOwner(), habits -> {
             adapter.submitList(habits);
         });
 
-        // dynamic Categories (Filtering)
         ChipGroup categoryChipGroup = view.findViewById(R.id.categoryChipGroup);
         habitViewModel.getAllCategories().observe(getViewLifecycleOwner(), categories -> {
             categoryChipGroup.removeAllViews();
@@ -144,8 +142,8 @@ public class HabitListFragment extends Fragment {
             }
         });
 
-        // sorting Logic
-        ChipGroup sortChipGroup = view.findViewById(R.id.sortChipGroup); // ensure this is a separate group
+        // sorting
+        ChipGroup sortChipGroup = view.findViewById(R.id.sortChipGroup);
         sortChipGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
             if (checkedIds.isEmpty()) return;
             int id = checkedIds.get(0);
@@ -186,11 +184,9 @@ public class HabitListFragment extends Fragment {
                 HabitModel habit = adapter.getCurrentList().get(position);
 
                 if (habit.isCompleted) {
-                    // only allow swiping LEFT
                     return makeMovementFlags(0, ItemTouchHelper.LEFT);
                 }
 
-                // allow both directions for non-completed habits
                 return super.getMovementFlags(recyclerView, viewHolder);
             }
 
@@ -202,11 +198,9 @@ public class HabitListFragment extends Fragment {
                     HabitModel habit = adapter.getCurrentList().get(position);
 
                     if (direction == ItemTouchHelper.RIGHT) {
-                        // OPEN EDIT
                         AddHabitSheet.newInstance(habit.getId()).show(getChildFragmentManager(), "EditTag");
                         adapter.notifyItemChanged(position); // Reset the swiped item view
                     } else {
-                        // DELETE/ARCHIVE (Left Swipe)
                         habitViewModel.archiveHabit(habit.getId());
 
                         Snackbar.make(
@@ -235,8 +229,6 @@ public class HabitListFragment extends Fragment {
 
                 if (dX > 0) {
                     if (habit != null && !habit.isCompleted) {
-                        // swiping Right - Edit
-                        // draw Green deleteBg for Edit
                         editBg.setBounds(itemView.getLeft(), itemView.getTop(),
                                 itemView.getLeft() + (int) dX, itemView.getBottom());
                         editBg.draw(c);
@@ -250,8 +242,6 @@ public class HabitListFragment extends Fragment {
                         editIcon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
                         editIcon.draw(c);
                     } else {
-                        // if it IS completed, don't draw anything for dX > 0
-                        // and don't call super to completely block the visual offset
                         return;
                     }
 

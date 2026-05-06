@@ -1,23 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Основные цвета в пастельных тонах -->
-    <!--<color name="primary_color">#FFB6C1</color>
-    <color name="secondary_color">#FFDAC1</color>
-    <color name="accent_color">#C7CEEA</color>
-    <color name="background_color">#FFF9F9</color>-->
-
-    <!-- Текст -->
-    <!--<color name="text_primary">#4A4A4A</color>
-    <color name="text_secondary">#888888</color>-->
-
-    <!-- Дополнительные -->
     <color name="streak_color">#FF9AA2</color>
-
-
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="primary">#6750A4</color>
     <color name="on_primary">#FFFFFF</color>
-    <color name="habit_card_bg">#F3EDF7</color> <!-- Light Lavender -->
-    <color name="streak_fire">#FF5722</color>   <!-- Vibrant Orange -->
+    <color name="habit_card_bg">#F3EDF7</color>
+    <color name="streak_fire">#FF5722</color>
 </resources>

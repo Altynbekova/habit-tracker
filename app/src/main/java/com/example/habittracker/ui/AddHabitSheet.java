@@ -30,7 +30,7 @@ import java.util.List;
 public class AddHabitSheet extends BottomSheetDialogFragment {
 
     private HabitViewModel viewModel;
-    private int habitId = -1; // -1 means "New"
+    private int habitId = -1;
     private HabitModel existingHabit;
     private DialogAddHabitBinding binding;
 
@@ -47,29 +47,7 @@ public class AddHabitSheet extends BottomSheetDialogFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_add_habit, container, false);
         binding = DialogAddHabitBinding.inflate(getLayoutInflater());
-        // Connect to the SAME ViewModel as the Fragment
         viewModel = new ViewModelProvider(requireActivity()).get(HabitViewModel.class);
-
-        /*EditText inputName = view.findViewById(R.id.editTextHabitName);
-        EditText description = view.findViewById(R.id.editTextDescription);
-        EditText targetDays = view.findViewById(R.id.editTextTargetDays);
-        Button saveBtn = view.findViewById(R.id.buttonSave);
-
-        saveBtn.setOnClickListener(v -> {
-            String name = inputName.getText().toString().trim();
-            if (!name.isEmpty()) {
-                HabitModel newHabit = new HabitModel();
-                newHabit.setName(name);
-                newHabit.setDescription(description.getText().toString().trim());
-                newHabit.setTargetDays(Integer.parseInt(targetDays.getText().toString().trim()));
-                newHabit.createdAt = LocalDateTime.now();
-                newHabit.frequencyType = FrequencyType.DAILY; // Default
-
-                viewModel.addHabit(newHabit);
-                dismiss(); // Close dialog
-            }
-        });*/
-
         return view;
     }
 
@@ -89,7 +67,7 @@ public class AddHabitSheet extends BottomSheetDialogFragment {
             habitId = getArguments().getInt("habitId", -1);
         }
 
-        // 1. DATA LOADING (EDIT MODE)
+        // 1. DATA LOADING
         if (habitId != -1) {
             dialogTitle.setText("Редактировать");
             try {
@@ -117,7 +95,6 @@ public class AddHabitSheet extends BottomSheetDialogFragment {
             for (Category c : categories) {
                 names.add(c.name);
                 if (habitId != -1 && existingHabit != null && c.id == existingHabit.categoryId) {
-//                    categoryDropdown.setText(c.name, false);
                     categoryToPreFill = c.name;
                 }
             }
@@ -131,7 +108,7 @@ public class AddHabitSheet extends BottomSheetDialogFragment {
                     existingHabit.categoryId = categories.get(pos).id);
         });
 
-        // 3. SAVE LOGIC
+        // 3. SAVE
         saveBtn.setOnClickListener(v -> {
             String name = inputName.getText().toString().trim();
             String daysStr = targetDays.getText().toString().trim();

@@ -32,11 +32,9 @@ public class HabitReminderReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        // Ensure you have POST_NOTIFICATIONS permission on Android 13+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS)
                     != PackageManager.PERMISSION_GRANTED) {
-                // cannot ask for permission here! log it and stop so the app doesn't crash
                 Log.e("HabitReminder", "Notification permission not granted. Skipping.");
                 return;
             }
@@ -74,20 +72,12 @@ public class HabitReminderReceiver extends BroadcastReceiver {
         });
 
         Calendar calendar = Calendar.getInstance();
-        /*// instant 2-minute test:
-        calendar.add(Calendar.MINUTE, 1);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);*/
-
-        // Regular Daily Logic (Commented out for 2-minute test)
         calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.MINUTE, minute);
         if (calendar.getTimeInMillis() <= System.currentTimeMillis()) {
             calendar.add(Calendar.DAY_OF_MONTH, 1);
         }
 
-        // RESCHEDULE
-//        LocalTime nextTime = LocalTime.of(hour, minute);// make it "Daily"
         LocalTime nextTime = LocalDateTime.ofInstant(
                         calendar.toInstant(),
                         calendar.getTimeZone().toZoneId())
@@ -96,31 +86,10 @@ public class HabitReminderReceiver extends BroadcastReceiver {
         new Thread(() -> {
             AppDatabase db = AppDatabase.getInstance(context);
             Reminder reminder = db.reminderDao().getReminderForHabit(habitId);
-
-            // only reschedule if the user hasn't turned off the switch in the meantime
-//            if (reminder != null && reminder.enabled) {
             if (reminder != null) {
                 NotificationHelper.scheduleAlarm(context, habitId, habitName, nextTime);
             }
         }).start();
-
-
-//        NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Habit Reminders", NotificationManager.IMPORTANCE_HIGH);
-            manager.createNotificationChannel(channel);
-        }
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(R.drawable.ic_notification) // Ensure this exists
-                .setContentTitle("Habit Reminder")
-                .setContentText("Time for: " + habitName)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setAutoCancel(true);
-
-        // using habitId ensures multiple habits show separate notifications
-        manager.notify(habitId, builder.build());*/
     }
 
     private void createNotificationChannel(Context context) {

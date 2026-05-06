@@ -23,52 +23,15 @@
             app:singleLine="true"
             app:singleSelection="true">
 
-            <!-- Default "All" Chip -->
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipAll"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:text="Все"
+                android:text="@string/all"
                 app:chipIcon="@drawable/ic_all_inclusive"
                 app:chipIconVisible="true" />
-
-            <!--<com.google.android.material.chip.Chip
-                android:id="@+id/chipHealth"
-                style="@style/Widget.Material3.Chip.Filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Health"
-                app:chipIcon="@drawable/ic_health_metrics"
-                app:chipIconVisible="true" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipWork"
-                style="@style/Widget.Material3.Chip.Filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Work"
-                app:chipIcon="@drawable/ic_work_outline"
-                app:chipIconVisible="true" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipPersonal"
-                style="@style/Widget.Material3.Chip.Filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Personal"
-                app:chipIcon="@drawable/ic_person"
-                app:chipIconVisible="true" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipOther"
-                style="@style/Widget.Material3.Chip.Filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Other"
-                app:chipIcon="@drawable/ic_category"
-                app:chipIconVisible="true" />-->
         </com.google.android.material.chip.ChipGroup>
     </HorizontalScrollView>
 
@@ -103,23 +66,22 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="true"
-                    android:text="Имя" />
+                    android:text="@string/name" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipSortDate"
                     style="@style/Widget.MaterialComponents.Chip.Filter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Дата создания" />
+                    android:text="@string/creation_date" />
             </com.google.android.material.chip.ChipGroup>
 
-            <!-- Sort Direction Toggle Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSortDirection"
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
-                android:contentDescription="Переключить направление сортировки"
-                android:text="Сортировать"
+                android:contentDescription="@string/toggle_sort_direction"
+                android:text="@string/sort"
                 app:icon="@drawable/ic_arrow_up"
                 app:iconGravity="textEnd" />
         </LinearLayout>

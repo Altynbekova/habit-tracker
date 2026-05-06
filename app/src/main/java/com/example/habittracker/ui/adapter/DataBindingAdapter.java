@@ -6,8 +6,6 @@ import android.view.View;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.BindingAdapter;
 
-import com.example.habittracker.R;
-
 public class DataBindingAdapter {
     @BindingAdapter("android:background")
     public static void setBackgroundColor(View view, String color) {
@@ -16,7 +14,8 @@ public class DataBindingAdapter {
                 int parsedColor = Color.parseColor(color);
                 view.setBackgroundColor(parsedColor);
             } catch (IllegalArgumentException e) {
-                view.setBackgroundColor(ContextCompat.getColor(view.getContext(), com.google.android.material.R.color.material_dynamic_neutral50));
+                view.setBackgroundColor(ContextCompat.getColor(view.getContext(),
+                        com.google.android.material.R.color.material_dynamic_neutral50));
             }
         }
     }

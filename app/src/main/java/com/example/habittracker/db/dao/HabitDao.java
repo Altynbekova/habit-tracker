@@ -23,12 +23,6 @@ import java.util.List;
 
 @Dao
 public abstract class HabitDao {
-    @Query("select * from habits")
-    public abstract LiveData<List<HabitModel>> getAllHabitsLive();
-
-    @Query("select * from habits")
-    public abstract List<HabitModel> getAllHabitsFuture();
-
     @Query("select * from habits where id=:id")
     public abstract LiveData<HabitModel> getHabitLive(int id);
 
@@ -44,9 +38,6 @@ public abstract class HabitDao {
     @Delete
     public abstract void delete(HabitModel habit);
 
-    @Query("delete from habits where id = :id")
-    public abstract void deleteById(int id);
-
     @Query("UPDATE habits SET isArchived = 1 WHERE id = :id")
     public abstract void archiveHabit(long id);
 
@@ -55,10 +46,6 @@ public abstract class HabitDao {
 
     @Query("UPDATE habits SET isArchived = 0 WHERE id = :id")
     public abstract void restoreHabit(long id);
-
-    @Transaction
-    @Query("SELECT * FROM habits WHERE isArchived = 0")
-    public abstract LiveData<List<HabitWithCategory>> getAllHabitsWithCategories();
 
     @Transaction
     @Query("SELECT * FROM habits WHERE id=:habitId and isArchived = 0")
@@ -72,39 +59,7 @@ public abstract class HabitDao {
      */
     @Transaction
     @Query("select * from habits, habit_completions where id=:habitId order by completionDate desc limit 1")
-    public abstract LiveData<HabitWithCompletion> getHabitWithCompletion(int habitId);
-
-    /**
-     * Finds habit with last completion
-     *
-     * @param habitId id of habit
-     * @return habit with completion info
-     */
-    @Transaction
-    @Query("select * from habits, habit_completions where id=:habitId order by completionDate desc limit 1")
     public abstract HabitWithCompletion getHabitWithCompletionSync(int habitId);
-
-    @Query("SELECT * FROM habits WHERE categoryId=:categoryId AND isArchived = 0")
-    public abstract LiveData<List<HabitModel>> getHabitsWithCategory(long categoryId);
-
-    @Query("SELECT * FROM habits WHERE isArchived = 0 and categoryId=:categoryId ORDER BY name ASC")
-    public abstract LiveData<List<HabitModel>> getFilteredSortedByName(long categoryId);
-
-    @Query("SELECT * FROM habits WHERE isArchived = 0 and categoryId=:categoryId ORDER BY createdAt DESC")
-    public abstract LiveData<List<HabitModel>> getFilteredSortedByDate(long categoryId);
-
-    @Query("SELECT * FROM habits WHERE isArchived = 0 ORDER BY name ASC")
-    public abstract LiveData<List<HabitModel>> getAllSortedByName();
-
-    @Query("SELECT * FROM habits WHERE isArchived = 0 ORDER BY createdAt DESC")
-    public abstract LiveData<List<HabitModel>> getAllSortedByDate();
-
-    // Simplified example for streak sorting (based on total completion count)
-    @Query("SELECT h.* FROM habits h LEFT JOIN habit_completions c ON h.id = c.habitId " +
-            "WHERE h.isArchived = 0 GROUP BY h.id ORDER BY COUNT(c.completionDate) DESC")
-    public abstract LiveData<List<HabitModel>> getAllSortedByStreak();
-
-//    LiveData<List<HabitModel>> getFilteredAndSortedHabits(Long categoryId, SortType sortType);
 
     @Query("SELECT * FROM habits WHERE isArchived = 0 " +
             "AND (:catId IS NULL OR categoryId = :catId) " +
@@ -148,10 +103,6 @@ public abstract class HabitDao {
 
     @Transaction
     @Query("SELECT * FROM habits WHERE id = :habitId")
-    public abstract LiveData<HabitWithDetails> getHabitWithDetails(int habitId);
-
-    @Transaction
-    @Query("SELECT * FROM habits WHERE id = :habitId")
     public abstract HabitWithDetails getHabitWithDetailsSync(int habitId);
 
 
@@ -164,7 +115,6 @@ public abstract class HabitDao {
         HabitModel habit = habitWithCompletion.habit;
         LocalDate date = dateTime.toLocalDate();
 
-//        if (habit == null) throw new HabitNotFoundException("Habit not found. Id="+ habitId);
         if (habit == null || habit.isCompleted || habitWithCompletion.completion != null &&
                 date.isEqual(habitWithCompletion.completion.getCompletionDate())) {
             return MarkDoneResult.ALREADY_DONE;
@@ -177,7 +127,7 @@ public abstract class HabitDao {
 
         String yesterday = date.minusDays(1).toString();
         boolean wasCompletedYesterday = isHabitCompletedOnDate(habitId, yesterday) > 0;
-        if(wasCompletedYesterday){
+        if (wasCompletedYesterday) {
             habit.setCurrentStreak(habit.getCurrentStreak() + 1);
             completion.setStatus(CompletionStatus.PARTIAL);
         } else {

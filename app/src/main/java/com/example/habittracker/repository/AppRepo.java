@@ -17,17 +17,12 @@ import com.example.habittracker.db.entity.HabitWithCategory;
 import com.example.habittracker.db.entity.HabitWithDetails;
 import com.example.habittracker.db.entity.MarkDoneResult;
 import com.example.habittracker.db.entity.Reminder;
-import com.example.habittracker.ui.SortType;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 public class AppRepo {
     private static final int POOL_SIZE = 4;
@@ -36,7 +31,6 @@ public class AppRepo {
     private final CategoryDao categoryDao;
     private final ReminderDao reminderDao;
     private final Executor executor = Executors.newFixedThreadPool(POOL_SIZE);
-    private final MutableLiveData<Boolean> isDuplicateEntry = new MutableLiveData<>();
 
     public AppRepo(Context context) {
         AppDatabase db = AppDatabase.getInstance(context);
@@ -44,27 +38,6 @@ public class AppRepo {
         completionDao = db.habitCompletionDao();
         categoryDao = db.categoryDao();
         reminderDao = db.reminderDao();
-    }
-
-    public LiveData<Boolean> getDuplicateEntryError() {
-        return isDuplicateEntry;
-    }
-
-    public List<HabitModel> getAllHabitsFuture() throws ExecutionException, InterruptedException {
-
-        Callable<List<HabitModel>> callable = new Callable<List<HabitModel>>() {
-            @Override
-            public List<HabitModel> call() throws Exception {
-                return habitDao.getAllHabitsFuture();
-            }
-        };
-
-        Future<List<HabitModel>> future = Executors.newSingleThreadExecutor().submit(callable);
-        return future.get();
-    }
-
-    public LiveData<List<HabitModel>> getAllHabitsLive() {
-        return habitDao.getAllHabitsLive();
     }
 
     public LiveData<List<HabitModel>> getAllActiveHabits() {
@@ -84,26 +57,6 @@ public class AppRepo {
         executor.execute(() -> habitDao.update(habitModel));
     }
 
-    public void deleteHabit(HabitModel habitModel) {
-        executor.execute(() -> habitDao.delete(habitModel));
-    }
-
-    public void deleteById(int id) {
-        executor.execute(() -> habitDao.deleteById(id));
-    }
-
-    public HabitModel getById(int habitId) throws ExecutionException, InterruptedException {
-        Callable<HabitModel> callable = new Callable<HabitModel>() {
-            @Override
-            public HabitModel call() throws Exception {
-                return habitDao.getHabit(habitId);
-            }
-        };
-
-        Future<HabitModel> future = Executors.newSingleThreadExecutor().submit(callable);
-        return future.get();
-    }
-
     public LiveData<HabitModel> getByIdLive(int habitId) {
         return habitDao.getHabitLive(habitId);
     }
@@ -114,12 +67,6 @@ public class AppRepo {
 
     public void archiveHabit(long habitId) {
         executor.execute(() -> habitDao.archiveHabit(habitId));
-    }
-
-    public long markHabitComplete(HabitCompletion completion) throws ExecutionException, InterruptedException {
-        Future<Long> future = Executors.newSingleThreadExecutor().submit(() ->
-                habitDao.insertAndCheckGoal(completion));
-        return future.get();
     }
 
     public LiveData<List<HabitCompletion>> getHistoryForHabit(long habitId) {
@@ -138,21 +85,6 @@ public class AppRepo {
         executor.execute(() -> habitDao.restoreHabit(habitId));
     }
 
-    public LiveData<List<HabitModel>> getHabitsByCategory(long categoryId) {
-        return habitDao.getHabitsWithCategory(categoryId);
-    }
-
-    public LiveData<List<HabitModel>> getFilteredAndSortedHabits(Long categoryId, SortType sortType) {
-        switch (sortType) {
-            case NAME:
-                return categoryId == null ? habitDao.getAllSortedByName() : habitDao.getFilteredSortedByName(categoryId);
-            case DATE:
-                return categoryId == null ? habitDao.getAllSortedByDate() : habitDao.getFilteredSortedByDate(categoryId);
-            default:
-                return habitDao.getAllSortedByStreak();
-        }
-    }
-
     public LiveData<List<HabitModel>> getFilteredSorted(Long categoryId, String sortType, int asc) {
         return habitDao.getFilteredSorted(categoryId, sortType, asc);
     }
@@ -163,7 +95,6 @@ public class AppRepo {
             reminder.setHabitId(habitId);
             reminder.setTime(time);
             reminder.setEnabled(true);
-            // insert a new one or replace the existing one for this habit
             reminderDao.insertOrUpdate(reminder);
         });
     }
@@ -176,10 +107,6 @@ public class AppRepo {
         executor.execute(() -> {
             reminderDao.updateStatusByHabitId(habitId, isChecked);
         });
-    }
-
-    public LiveData<HabitWithDetails> getHabitWithDetails(int habitId) {
-        return habitDao.getHabitWithDetails(habitId);
     }
 
     public HabitWithDetails getHabitWithDetailsSync(int habitId) {

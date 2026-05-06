@@ -7,4 +7,23 @@
     <string name="channel_name">HabitTracker notifications channel</string>
     <string name="channel_description">Channel to notify of habits to develop</string>
     <string name="notification_pick_time_btn_txt">Выбрать время напоминания</string>
+    <string name="new_habit">Новая привычка*</string>
+    <string name="new_habit_input_hint">Какое действие хотите отслеживать?</string>
+    <string name="habit_description">Описание (опционально)</string>
+    <string name="target_days_hint">Сколько дней подряд?</string>
+    <string name="habit_category">Категория*</string>
+    <string name="save">Сохранить</string>
+    <string name="toolbar_title">Трекер привычек</string>
+    <string name="dark_mode">Темная тема</string>
+    <string name="streak">Прогресс</string>
+    <string name="about_habit">О привычке</string>
+    <string name="notifications">Уведомления</string>
+    <string name="notification_time_default">Ежедневно в 09:00</string>
+    <string name="all">Все</string>
+    <string name="name">Имя</string>
+    <string name="creation_date">Дата создания</string>
+    <string name="toggle_sort_direction">Переключить направление сортировки</string>
+    <string name="sort">Сортировать</string>
+    <string name="category_icon">Иконка категории</string>
+    <string name="mark_as_complete">Отметить как выполненное</string>
 </resources>

@@ -10,7 +10,7 @@
         android:id="@+id/textViewDialogAddHabitTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Новая привычка"
+        android:text="@string/new_habit"
         android:textSize="20sp"
         android:textStyle="bold" />
 
@@ -24,7 +24,7 @@
             android:id="@+id/editTextHabitName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Какое действие хотите отслеживать?" />
+            android:hint="@string/new_habit_input_hint" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -37,7 +37,7 @@
             android:id="@+id/editTextDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Описание (опционально)"
+            android:hint="@string/habit_description"
             android:inputType="textMultiLine"
             android:minLines="2" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -52,7 +52,7 @@
             android:id="@+id/editTextTargetDays"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Сколько дней подряд?"
+            android:hint="@string/target_days_hint"
             android:inputType="number"
             android:maxLength="3"/>
     </com.google.android.material.textfield.TextInputLayout>
@@ -62,7 +62,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:hint="Категория *"
+        android:hint="@string/habit_category"
         app:errorEnabled="true">
 
         <AutoCompleteTextView
@@ -78,5 +78,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Сохранить" />
+        android:text="@string/save" />
 </LinearLayout>

@@ -8,9 +8,6 @@
     android:layout_margin="8dp"
     android:clickable="true"
     android:focusable="true">
-<!--    app:cardBackgroundColor="@color/habit_card_background">-->
-    <!--app:strokeColor="?attr/colorOutlineVariant"
-    style="?attr/materialCardViewFilled">-->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,18 +15,11 @@
         android:orientation="horizontal"
         android:padding="16dp">
 
-        <!--<TextView
-            android:id="@+id/textViewHabitCategory"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textSize="18sp" />-->
-
         <ImageView
             android:id="@+id/imageViewHabitCategory"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:contentDescription="Category icon"
+            android:contentDescription="@string/category_icon"
             android:layout_marginEnd="12dp"
             android:layout_gravity="center_vertical" />
 
@@ -42,23 +32,16 @@
             android:layout_gravity="center_vertical"
             android:textSize="18sp" />
 
-        <!--<CheckBox
-            android:id="@+id/checkBoxComplete"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />-->
-
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonComplete"
             style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:padding="0dp"
-            android:contentDescription="Mark as complete"
+            android:contentDescription="@string/mark_as_complete"
             android:clickable="false"
             app:iconGravity="textStart"
             app:iconPadding="0dp"
             app:iconSize="28dp"/>
-<!--            app:iconTint="@color/your_selector_or_color" /
-            app:icon="@drawable/ic_circle_outline">-->
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

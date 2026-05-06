@@ -55,12 +55,10 @@ public class HabitDetailFragment extends Fragment {
     private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
-                    // check if view still exists (fragment might have been closed)
                     if (getView() != null) {
                         TextView textNotificationTime = getView().findViewById(R.id.textNotificationTime);
                         MaterialSwitch switchNotification = getView().findViewById(R.id.switchNotification);
 
-                        // call your specific signature
                         showTimePicker(textNotificationTime, switchNotification);
                     }
                 } else {
@@ -68,11 +66,17 @@ public class HabitDetailFragment extends Fragment {
                 }
             });
 
+    private static void disableButtons(@NonNull View view) {
+        view.findViewById(R.id.btnComplete).setEnabled(false);
+        view.findViewById(R.id.btnEdit).setEnabled(false);
+        view.findViewById(R.id.layoutNotification).setEnabled(false);
+        ((MaterialSwitch) view.findViewById(R.id.switchNotification)).setChecked(false);
+        view.findViewById(R.id.switchNotification).setEnabled(false);
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Retrieve habit ID passed from HabitListFragment
         if (getArguments() != null) {
             habitId = getArguments().getInt("habitId");
         }
@@ -83,7 +87,6 @@ public class HabitDetailFragment extends Fragment {
                 .setTitle("Уведомления отключены")
                 .setMessage("Без этого разрешения приложение не сможет напоминать вам о привычке. Вы можете включить его в настройках приложения.")
                 .setPositiveButton("В настройки", (d, w) -> {
-                    // Open App Info settings
                     Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                     Uri uri = Uri.fromParts("package", requireContext().getPackageName(), null);
                     intent.setData(uri);
@@ -92,7 +95,6 @@ public class HabitDetailFragment extends Fragment {
                 .setNegativeButton("Отмена", null)
                 .show();
     }
-
 
     @Nullable
     @Override
@@ -139,7 +141,6 @@ public class HabitDetailFragment extends Fragment {
             }
         });
 
-        // Trigger the action
         view.findViewById(R.id.btnComplete).setOnClickListener(v -> habitViewModel.completeHabit(habitId));
 
         view.findViewById(R.id.btnDelete).setOnClickListener(v -> {
@@ -158,7 +159,6 @@ public class HabitDetailFragment extends Fragment {
         });
 
         view.findViewById(R.id.btnEdit).setOnClickListener(v -> {
-            // for future open a pre-filled AddHabitSheet for editing
             AddHabitSheet editSheet = AddHabitSheet.newInstance(habitId);
             editSheet.show(getChildFragmentManager(), "EditHabitTag");
         });
@@ -195,7 +195,6 @@ public class HabitDetailFragment extends Fragment {
             }
         });
 
-        // setup the Click Listener for the Time Picker
         view.findViewById(R.id.layoutNotification).setOnClickListener(v -> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS)
@@ -209,18 +208,9 @@ public class HabitDetailFragment extends Fragment {
             }
         });
 
-        // handle Switch toggle
         switchNotification.setOnCheckedChangeListener((buttonView, isChecked) -> {
             habitViewModel.updateReminderStatus(habitId, isChecked);
         });
-    }
-
-    private static void disableButtons(@NonNull View view) {
-        view.findViewById(R.id.btnComplete).setEnabled(false);
-        view.findViewById(R.id.btnEdit).setEnabled(false);
-        view.findViewById(R.id.layoutNotification).setEnabled(false);
-        ((MaterialSwitch) view.findViewById(R.id.switchNotification)).setChecked(false);
-        view.findViewById(R.id.switchNotification).setEnabled(false);
     }
 
     private void showConfettiAnimation() {
@@ -271,8 +261,6 @@ public class HabitDetailFragment extends Fragment {
 
         int streak = 0;
         LocalDate today = LocalDate.now();
-
-        // simple logic: count consecutive days backwards from today
         for (int i = 0; i < history.size(); i++) {
             if (history.get(i).getCompletionDate().equals(today.minusDays(i))) {
                 streak++;

@@ -25,9 +25,6 @@ public interface ReminderDao {
     @Query("SELECT * FROM reminders WHERE habitId = :habitId order by id desc LIMIT 1")
     Reminder getReminderForHabit(int habitId);
 
-    @Query("SELECT * FROM reminders WHERE habitId = :habitId")
-    List<Reminder> getRemindersForHabit(int habitId);
-
     @Query("UPDATE reminders SET enabled = :isEnabled WHERE id = :id")
     void updateReminderStatus(long id, boolean isEnabled);
 

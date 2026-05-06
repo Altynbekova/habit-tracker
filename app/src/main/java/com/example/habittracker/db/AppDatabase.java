@@ -26,7 +26,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Database(entities = {HabitModel.class, HabitCompletion.class, Category.class, Reminder.class},
-        exportSchema = true, version = 1)
+        exportSchema = false, version = 1)
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
     private static final String DB_NAME = "habit_database.db";
