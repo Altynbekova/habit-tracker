@@ -5,7 +5,23 @@ import androidx.room.Relation;
 
 public class HabitWithCategory {
     @Embedded
-    public HabitModel habit;
+    private HabitModel habit;
     @Relation(parentColumn = "categoryId", entityColumn = "id")
-    public Category category;
+    private Category category;
+
+    public HabitModel getHabit() {
+        return habit;
+    }
+
+    public void setHabit(HabitModel habit) {
+        this.habit = habit;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
 }

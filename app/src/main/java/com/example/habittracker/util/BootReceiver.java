@@ -13,14 +13,13 @@ public class BootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
-            // We must use a background thread or a WorkManager
-            // because Room/Database operations cannot run on the Main Thread
+            // use a background thread because Room/Database operations cannot run on the Main Thread
             new Thread(() -> {
                 AppDatabase db = AppDatabase.getInstance(context);
                 List<Reminder> activeReminders = db.reminderDao().getAllEnabledRemindersSync();
 
                 for (Reminder reminder : activeReminders) {
-                    // Re-schedule each one
+                    // re-schedule each one
                     NotificationHelper.scheduleAlarm(context, reminder.getHabitId(),
                             db.habitDao().getHabit(reminder.getHabitId()).getName(),
                             reminder.getTime());

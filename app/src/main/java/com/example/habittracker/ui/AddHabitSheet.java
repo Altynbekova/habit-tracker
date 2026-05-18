@@ -1,15 +1,10 @@
 package com.example.habittracker.ui;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +17,8 @@ import com.example.habittracker.db.entity.FrequencyType;
 import com.example.habittracker.db.entity.HabitModel;
 import com.example.habittracker.viewmodel.HabitViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,7 +27,7 @@ import java.util.List;
 public class AddHabitSheet extends BottomSheetDialogFragment {
 
     private HabitViewModel viewModel;
-    private int habitId = -1; // -1 means "New"
+    private int habitId = -1; // -1 for new habit
     private HabitModel existingHabit;
     private DialogAddHabitBinding binding;
 
@@ -44,33 +41,12 @@ public class AddHabitSheet extends BottomSheetDialogFragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.dialog_add_habit, container, false);
-        binding = DialogAddHabitBinding.inflate(getLayoutInflater());
-        // Connect to the SAME ViewModel as the Fragment
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        binding = DialogAddHabitBinding.inflate(getLayoutInflater(), container, false);
         viewModel = new ViewModelProvider(requireActivity()).get(HabitViewModel.class);
 
-        /*EditText inputName = view.findViewById(R.id.editTextHabitName);
-        EditText description = view.findViewById(R.id.editTextDescription);
-        EditText targetDays = view.findViewById(R.id.editTextTargetDays);
-        Button saveBtn = view.findViewById(R.id.buttonSave);
-
-        saveBtn.setOnClickListener(v -> {
-            String name = inputName.getText().toString().trim();
-            if (!name.isEmpty()) {
-                HabitModel newHabit = new HabitModel();
-                newHabit.setName(name);
-                newHabit.setDescription(description.getText().toString().trim());
-                newHabit.setTargetDays(Integer.parseInt(targetDays.getText().toString().trim()));
-                newHabit.createdAt = LocalDateTime.now();
-                newHabit.frequencyType = FrequencyType.DAILY; // Default
-
-                viewModel.addHabit(newHabit);
-                dismiss(); // Close dialog
-            }
-        });*/
-
-        return view;
+        return binding.getRoot();
     }
 
     @Override
@@ -78,78 +54,125 @@ public class AddHabitSheet extends BottomSheetDialogFragment {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(HabitViewModel.class);
 
-        EditText inputName = view.findViewById(R.id.editTextHabitName);
-        EditText description = view.findViewById(R.id.editTextDescription);
-        EditText targetDays = view.findViewById(R.id.editTextTargetDays);
-        AutoCompleteTextView categoryDropdown = view.findViewById(R.id.categoryDropdown);
-        Button saveBtn = view.findViewById(R.id.buttonSave);
-        TextView dialogTitle = view.findViewById(R.id.textViewDialogAddHabitTitle);
-
         if (getArguments() != null) {
             habitId = getArguments().getInt("habitId", -1);
         }
 
-        // 1. DATA LOADING (EDIT MODE)
-        if (habitId != -1) {
-            dialogTitle.setText("Редактировать");
-            try {
-                viewModel.getHabitWithCategory(habitId).observe(getViewLifecycleOwner(), habitWithCategory -> {
-                    if (habitWithCategory != null) {
-                        existingHabit = habitWithCategory.habit;
-                        inputName.setText(habitWithCategory.habit.getName());
-                        description.setText(habitWithCategory.habit.getDescription());
-                        targetDays.setText(String.valueOf(habitWithCategory.habit.getTargetDays()));
-                        categoryDropdown.setText(habitWithCategory.category.name, false);
-                    }
-                });
-            } catch (Exception e) {
-                Log.e("HabitTracker", "Error loading habit", e);
-            }
+        if (habitId == -1) {
+            existingHabit = new HabitModel();
         } else {
-            existingHabit = new HabitModel(); // Prepare new habit object
+            existingHabit = viewModel.getLiveHabitById(habitId).getValue();
         }
 
-        // 2. CATEGORY SETUP
+        // observe all categories. runs first, prepares the dropdown
         viewModel.getAllCategories().observe(getViewLifecycleOwner(), categories -> {
-            List<String> names = new ArrayList<>();
-            String categoryToPreFill = "";
+            if (categories == null || categories.isEmpty()) return;
 
+            List<String> names = new ArrayList<>();
             for (Category c : categories) {
                 names.add(c.name);
-                if (habitId != -1 && existingHabit != null && c.id == existingHabit.categoryId) {
-//                    categoryDropdown.setText(c.name, false);
-                    categoryToPreFill = c.name;
-                }
-            }
-            categoryDropdown.setAdapter(new ArrayAdapter<>(requireContext(),
-                    android.R.layout.simple_dropdown_item_1line, names));
-            if (!categoryToPreFill.isEmpty()) {
-                categoryDropdown.setText(categoryToPreFill, false);
             }
 
-            categoryDropdown.setOnItemClickListener((p, v1, pos, id) ->
-                    existingHabit.categoryId = categories.get(pos).id);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
+                    android.R.layout.simple_dropdown_item_1line, names);
+            binding.categoryDropdown.setAdapter(adapter);
+
+            if (habitId == -1 && existingHabit != null && existingHabit.categoryId == null) {
+                Category defaultCategory = categories.get(0);
+                existingHabit.categoryId = defaultCategory.id;
+                binding.categoryDropdown.setText(defaultCategory.name, false);
+            }
+
+            binding.categoryDropdown.setThreshold(1);
+            binding.categoryDropdown.setOnItemClickListener(
+                    (parent, itemView, position, id) -> {
+                        if (existingHabit != null) {
+                            existingHabit.categoryId = categories.get(position).id;
+
+                            // clear the validation error state as soon as any category has been chosen
+                            View parentLayout = (View) binding.categoryDropdown.getParent().getParent();
+                            if (parentLayout instanceof TextInputLayout) {
+                                ((TextInputLayout) parentLayout).setError(null);
+                            }
+                        }
+                    });
+
+            if (habitId != -1 && existingHabit != null) {
+                prefillCategoryName(categories, existingHabit.categoryId);
+            }
         });
 
-        // 3. SAVE LOGIC
-        saveBtn.setOnClickListener(v -> {
-            String name = inputName.getText().toString().trim();
-            String daysStr = targetDays.getText().toString().trim();
+        // observe habit data (Edit Mode)
+        if (habitId != -1) {
+            binding.textViewDialogAddHabitTitle.setText("Редактировать");
 
-            if (name.isEmpty() || daysStr.isEmpty()) return;
+            viewModel.getHabitWithCategory(habitId).observe(getViewLifecycleOwner(), habitWithCategory -> {
+                if (habitWithCategory == null) return;
 
-            existingHabit.setName(name);
-            existingHabit.setDescription(description.getText().toString().trim());
-            existingHabit.setTargetDays(Integer.parseInt(daysStr));
+                existingHabit = habitWithCategory.getHabit();
+                binding.editTextHabitName.setText(existingHabit.getName());
+                binding.editTextDescription.setText(existingHabit.getDescription());
+                binding.editTextTargetDays.setText(String.valueOf(existingHabit.getTargetDays()));
+
+                // pre-fill if categories observer have already finished loading
+                List<Category> currentCategories = viewModel.getAllCategories().getValue();
+                if (currentCategories != null) {
+                    prefillCategoryName(currentCategories, existingHabit.categoryId);
+                } else if (habitWithCategory.getCategory() != null) {
+                    // fallback. use the joined category object directly
+                    binding.categoryDropdown.setText(habitWithCategory.getCategory().name, false);
+                }
+            });
+        }
+
+        // save
+        binding.buttonSave.setOnClickListener(v -> {
+            if (!isValid(binding.editTextHabitName) || !isValid(binding.editTextTargetDays)) return;
+
+            existingHabit.setName(binding.editTextHabitName.getText().toString().trim());
+            existingHabit.setDescription(binding.editTextDescription.getText().toString().trim());
+            existingHabit.setTargetDays(Integer.parseInt(binding.editTextTargetDays.getText().toString().trim()));
 
             if (habitId == -1) {
                 existingHabit.createdAt = LocalDateTime.now();
                 existingHabit.frequencyType = FrequencyType.DAILY;
                 viewModel.addHabit(existingHabit);
             } else {
+                if (existingHabit.getCurrentStreak() >= existingHabit.getTargetDays()) {
+                    existingHabit.isCompleted = true;
+                }
                 viewModel.updateHabit(existingHabit);
             }
             dismiss();
         });
     }
+
+    private boolean isValid(TextInputEditText editText) {
+        boolean isValid = true;
+        if (editText.getText().toString().isBlank()) {
+            View parentLayout = (View) editText.getParent().getParent();
+            if (parentLayout instanceof TextInputLayout) {
+                ((TextInputLayout) parentLayout)
+                        .setError("Необходимо заполнить");
+            }
+            isValid = false;
+        } else if (editText.getId() == R.id.editTextTargetDays &&
+                Integer.parseInt(editText.getText().toString().trim()) < 1) {
+            ((TextInputLayout) editText.getParent().getParent())
+                    .setError("Должно быть > 0");
+
+            isValid = false;
+        }
+        return isValid;
+    }
+
+    private void prefillCategoryName(List<Category> categories, long categoryId) {
+        for (Category c : categories) {
+            if (c.id == categoryId) {
+                binding.categoryDropdown.setText(c.name, false);
+                break;
+            }
+        }
+    }
+
 }

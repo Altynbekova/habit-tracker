@@ -12,7 +12,7 @@ public class SettingsViewModel extends ViewModel {
 
     public SettingsViewModel(ThemeManager manager) {
         this.themeManager = manager;
-        // Observe DataStore and update LiveData
+        // observe DataStore and update LiveData
         themeManager.getTheme().subscribe(themeLiveData::postValue);
     }
 

@@ -25,6 +25,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.example.habittracker.R;
+import com.example.habittracker.databinding.FragmentHabitDetailBinding;
 import com.example.habittracker.db.entity.HabitCompletion;
 import com.example.habittracker.util.NotificationHelper;
 import com.example.habittracker.viewmodel.HabitViewModel;
@@ -45,10 +46,10 @@ import nl.dionsegijn.konfetti.core.Position;
 import nl.dionsegijn.konfetti.core.Spread;
 import nl.dionsegijn.konfetti.core.emitter.Emitter;
 import nl.dionsegijn.konfetti.core.emitter.EmitterConfig;
-import nl.dionsegijn.konfetti.xml.KonfettiView;
 
 public class HabitDetailFragment extends Fragment {
     private static final String TIME_FORMAT = "HH:mm";
+    private FragmentHabitDetailBinding binding;
     private HabitViewModel habitViewModel;
     private int habitId;
 
@@ -57,17 +58,20 @@ public class HabitDetailFragment extends Fragment {
                 if (isGranted) {
                     // check if view still exists (fragment might have been closed)
                     if (getView() != null) {
-                        TextView textNotificationTime = getView().findViewById(R.id.textNotificationTime);
-                        MaterialSwitch switchNotification = getView().findViewById(R.id.switchNotification);
-
-                        // call your specific signature
-                        showTimePicker(textNotificationTime, switchNotification);
+                        showTimePicker(binding.textNotificationTime, binding.switchNotification);
                     }
                 } else {
                     Snackbar.make(requireView(), "Уведомления отключены", Snackbar.LENGTH_SHORT).show();
                 }
             });
 
+    private void disableButtons(@NonNull View view) {
+        binding.btnComplete.setEnabled(false);
+        binding.btnEdit.setEnabled(false);
+        binding.layoutNotification.setEnabled(false);
+        binding.switchNotification.setChecked(false);
+        binding.switchNotification.setEnabled(false);
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -93,20 +97,20 @@ public class HabitDetailFragment extends Fragment {
                 .show();
     }
 
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_habit_detail, container, false);
+        binding = FragmentHabitDetailBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+//        return inflater.inflate(R.layout.fragment_habit_detail, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        TextView nameText = view.findViewById(R.id.textDetailName);
-        TextView descText = view.findViewById(R.id.textLongDescription);
-        TextView streakText = view.findViewById(R.id.textStreakCount);
+        TextView nameText = binding.textDetailName;
+        TextView descText = binding.textLongDescription;
+        TextView streakText = binding.textStreakCount;
 
         habitViewModel = new ViewModelProvider(requireActivity()).get(HabitViewModel.class);
 
@@ -140,9 +144,9 @@ public class HabitDetailFragment extends Fragment {
         });
 
         // Trigger the action
-        view.findViewById(R.id.btnComplete).setOnClickListener(v -> habitViewModel.completeHabit(habitId));
+        binding.btnComplete.setOnClickListener(v -> habitViewModel.completeHabit(habitId));
 
-        view.findViewById(R.id.btnDelete).setOnClickListener(v -> {
+        binding.btnDelete.setOnClickListener(v -> {
             new AlertDialog.Builder(requireContext())
                     .setTitle("Удалить?")
                     .setMessage("Это приведет к архивированию привычки.")
@@ -157,7 +161,7 @@ public class HabitDetailFragment extends Fragment {
                     .show();
         });
 
-        view.findViewById(R.id.btnEdit).setOnClickListener(v -> {
+        binding.btnEdit.setOnClickListener(v -> {
             // for future open a pre-filled AddHabitSheet for editing
             AddHabitSheet editSheet = AddHabitSheet.newInstance(habitId);
             editSheet.show(getChildFragmentManager(), "EditHabitTag");
@@ -171,7 +175,7 @@ public class HabitDetailFragment extends Fragment {
                 float progressPercent = (target > 0) ? ((float) currentStreak / target) * 100 : 0;
                 int finalProgress = Math.min(100, (int) progressPercent);
 
-                LinearProgressIndicator streakProgress = view.findViewById(R.id.streakProgress);
+                LinearProgressIndicator streakProgress = binding.streakProgress;
                 streakProgress.setProgress(finalProgress, true);
 
                 if (finalProgress >= 100) {
@@ -181,8 +185,8 @@ public class HabitDetailFragment extends Fragment {
         });
 
 
-        TextView textNotificationTime = view.findViewById(R.id.textNotificationTime);
-        MaterialSwitch switchNotification = view.findViewById(R.id.switchNotification);
+        TextView textNotificationTime = binding.textNotificationTime;
+        MaterialSwitch switchNotification = binding.switchNotification;
 
         habitViewModel.getReminderForHabit(habitId).observe(getViewLifecycleOwner(), reminder -> {
             if (reminder != null) {
@@ -195,8 +199,7 @@ public class HabitDetailFragment extends Fragment {
             }
         });
 
-        // setup the Click Listener for the Time Picker
-        view.findViewById(R.id.layoutNotification).setOnClickListener(v -> {
+        binding.layoutNotification.setOnClickListener(v -> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS)
                         == PackageManager.PERMISSION_GRANTED) {
@@ -215,19 +218,9 @@ public class HabitDetailFragment extends Fragment {
         });
     }
 
-    private static void disableButtons(@NonNull View view) {
-        view.findViewById(R.id.btnComplete).setEnabled(false);
-        view.findViewById(R.id.btnEdit).setEnabled(false);
-        view.findViewById(R.id.layoutNotification).setEnabled(false);
-        ((MaterialSwitch) view.findViewById(R.id.switchNotification)).setChecked(false);
-        view.findViewById(R.id.switchNotification).setEnabled(false);
-    }
-
     private void showConfettiAnimation() {
-        final KonfettiView konfettiView = getView().findViewById(R.id.konfettiView);
-
         EmitterConfig emitterConfig = new Emitter(3L, TimeUnit.SECONDS).perSecond(50);
-        konfettiView.start(
+        binding.konfettiView.start(
                 new PartyFactory(emitterConfig)
                         .angle(Angle.TOP)
                         .spread(Spread.WIDE)

@@ -37,7 +37,7 @@ public interface ReminderDao {
     @Query("UPDATE reminders SET enabled = :isEnabled WHERE habitId = :habitId")
     void updateStatusByHabitId(int habitId, boolean isEnabled);
 
-    // Used for the BootReceiver (Synchronous)
+    // used for the BootReceiver
     @Query("SELECT * FROM reminders WHERE enabled = 1")
     List<Reminder> getAllEnabledRemindersSync();
 

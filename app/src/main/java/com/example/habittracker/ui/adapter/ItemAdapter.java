@@ -31,8 +31,10 @@ public class ItemAdapter extends ListAdapter<HabitModel, ItemAdapter.HabitViewHo
 
         @Override
         public boolean areContentsTheSame(@NonNull HabitModel oldItem, @NonNull HabitModel newItem) {
-            return oldItem.getName().equals(newItem.getName()) && oldItem.isArchived == newItem.isArchived
-                    && oldItem.isCompleted == newItem.isCompleted;
+            return oldItem.getName().equals(newItem.getName()) &&
+                    oldItem.isArchived == newItem.isArchived &&
+                    oldItem.isCompleted == newItem.isCompleted &&
+                    oldItem.getCategoryId().equals(newItem.getCategoryId());
         }
     };
     private static final Map<Long, Category> categoryMap = new HashMap<>(
@@ -70,9 +72,7 @@ public class ItemAdapter extends ListAdapter<HabitModel, ItemAdapter.HabitViewHo
 
         if (currentHabit.categoryId != null && categoryMap.get(currentHabit.categoryId) != null) {
             holder.imageViewCategory.setImageResource(
-                    Utils.drawableMap.get(
-                            categoryMap.get(currentHabit.categoryId).icon
-                    )
+                    Utils.drawableMap.get(categoryMap.get(currentHabit.categoryId).icon)
             );
             holder.imageViewCategory.setVisibility(View.VISIBLE);
 
@@ -101,7 +101,6 @@ public class ItemAdapter extends ListAdapter<HabitModel, ItemAdapter.HabitViewHo
     }
 
     static class HabitViewHolder extends RecyclerView.ViewHolder {
-        //        private final TextView textViewCategory;
         private final ImageView imageViewCategory;
         private final TextView textViewName;
         private final MaterialButton buttonComplete;
@@ -109,7 +108,6 @@ public class ItemAdapter extends ListAdapter<HabitModel, ItemAdapter.HabitViewHo
 
         public HabitViewHolder(@NonNull View itemView) {
             super(itemView);
-//            textViewCategory = itemView.findViewById(R.id.textViewHabitCategory);
             imageViewCategory = itemView.findViewById(R.id.imageViewHabitCategory);
             textViewName = itemView.findViewById(R.id.textViewHabitName);
             buttonComplete = itemView.findViewById(R.id.buttonComplete);

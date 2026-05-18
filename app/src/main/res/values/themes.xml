@@ -1,21 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Базовая тема приложения -->
-    <!--<style name="Theme.HabitTracker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/primary_color</item>
-        <item name="colorPrimaryVariant">@color/pastel_pink</item>
-        <item name="colorOnPrimary">@android:color/white</item>
-        <item name="colorSecondary">@color/secondary_color</item>
-        <item name="colorSecondaryVariant">@color/pastel_peach</item>
-        <item name="colorOnSecondary">@color/text_primary</item>
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <item name="android:windowBackground">@color/background_color</item>
-        <item name="android:navigationBarColor">@color/background_color</item>
-    </style>-->
     <!-- Base application theme. -->
     <style name="Base.Theme.HabitTracker" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
-
         <!-- Main Brand Colors -->
         <item name="colorPrimary">@color/primary</item>
         <item name="colorOnPrimary">@color/on_primary</item>
@@ -27,11 +12,6 @@
         <!-- Status Bar & Navigation -->
         <item name="android:statusBarColor">?attr/colorSurface</item>
         <item name="android:windowLightStatusBar">true</item>
-
-        <!--        &lt;!&ndash; These are the M3 tokens used by the card &ndash;&gt;-->
-        <!--        <item name="colorSecondaryContainer">@color/design_default_color_secondary</item>-->
-        <!--        <item name="onSecondaryContainer">@color/</item>-->
-        <!--&lt;!&ndash;        <item name="colorSurface">@color/m3_white</item>&ndash;&gt;-->
     </style>
 
     <style name="Theme.HabitTracker" parent="Base.Theme.HabitTracker" />

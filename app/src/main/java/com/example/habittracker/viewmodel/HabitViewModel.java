@@ -2,7 +2,6 @@ package com.example.habittracker.viewmodel;
 
 
 import android.app.Application;
-import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -13,22 +12,17 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.Transformations;
 
 import com.example.habittracker.db.entity.Category;
-import com.example.habittracker.db.entity.CompletionStatus;
 import com.example.habittracker.db.entity.HabitCompletion;
 import com.example.habittracker.db.entity.HabitModel;
 import com.example.habittracker.db.entity.HabitWithCategory;
-import com.example.habittracker.db.entity.HabitWithDetails;
 import com.example.habittracker.db.entity.MarkDoneResult;
 import com.example.habittracker.db.entity.Reminder;
 import com.example.habittracker.repository.AppRepo;
 import com.example.habittracker.ui.SortType;
-import com.example.habittracker.util.NotificationHelper;
 import com.example.habittracker.util.SingleLiveEvent;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import kotlin.Triple;
 
@@ -45,31 +39,14 @@ public class HabitViewModel extends AndroidViewModel {
     private final MutableLiveData<String> completionStatus = new MutableLiveData<>();
     private final SingleLiveEvent<MarkDoneResult> markDoneEvent = new SingleLiveEvent<>();
 
+    private final MediatorLiveData<HabitModel> habitState = new MediatorLiveData<>();
+
 
     public HabitViewModel(@NonNull Application application) {
         super(application);
         repository = new AppRepo(application);
         allActiveHabits = repository.getAllActiveHabits();
-        /*filteredHabits = Transformations.switchMap(filterCategoryId, categoryId -> {
-            if (categoryId == null) {
-                return repository.getAllActiveHabits();
-            } else {
-                return repository.getHabitsByCategory(categoryId);
-            }
-        });*/
-
-        /*// Combine all filters: Category, Search, and Sort
-        MediatorLiveData<Pair<Long, SortType>> filterMerger = new MediatorLiveData<>();
-        // ... add sources for filterCategoryId and searchQuery ...
-        filterMerger.addSource(sortType, sort ->
-                filterMerger.setValue(new Pair<>(filterCategoryId.getValue(), sort)));
-
-        filteredHabits = Transformations.switchMap(filterMerger, filters -> {
-            // Logic to choose the right repository method based on SortType
-            return repository.getFilteredAndSortedHabits(filters.getFirst(), filters.getSecond());
-        });*/
-
-        // Merge both chip selections into one trigger
+        // merging both chip selections into one trigger
         MediatorLiveData<Triple<Long, String, Boolean>> filterMerger = new MediatorLiveData<>();
         filterMerger.addSource(selectedCategoryId, id ->
                 filterMerger.setValue(new Triple<>(id, selectedSortType.getValue(), isAscending.getValue())));
@@ -84,36 +61,12 @@ public class HabitViewModel extends AndroidViewModel {
                 repository.getFilteredSorted(params.getFirst(), params.getSecond(), params.getThird() ? 1 : 0));
     }
 
-    public LiveData<List<HabitModel>> getAllActiveHabits() {
-        return allActiveHabits;
-    }
-
-    public List<HabitModel> getAllHabitsFuture() throws ExecutionException, InterruptedException {
-        return repository.getAllHabitsFuture();
-    }
-
-    public LiveData<List<HabitModel>> getAllHabitsLive() {
-        return repository.getAllHabitsLive();
-    }
-
     public void addHabit(HabitModel habitModel) {
         repository.insertHabit(habitModel);
     }
 
     public void updateHabit(HabitModel habitModel) {
         repository.updateHabit(habitModel);
-    }
-
-    public void deleteHabit(HabitModel habitModel) {
-        repository.deleteHabit(habitModel);
-    }
-
-    public void deleteById(int id) {
-        repository.deleteById(id);
-    }
-
-    public HabitModel getHabitById(int habitId) throws ExecutionException, InterruptedException {
-        return repository.getById(habitId);
     }
 
     public LiveData<HabitModel> getLiveHabitById(int habitId) {
@@ -175,50 +128,22 @@ public class HabitViewModel extends AndroidViewModel {
         repository.updateReminderStatus(habitId, isChecked);
     }
 
-    public LiveData<HabitWithDetails> getHabitDetail(int habitId) {
-        return repository.getHabitWithDetails(habitId);
-    }
-
-    public void toggleReminder(int habitId, boolean isChecked) {
-        updateReminderStatus(habitId, isChecked);
-
-        // schedule or Cancel the Alarm based on the toggle
-        // use a background thread to fetch the latest data before scheduling
-        AsyncTask.execute(() -> {
-            HabitWithDetails details = repository.getHabitWithDetailsSync(habitId);
-            if (details != null && details.reminder != null) {
-//                if (isChecked) {
-                NotificationHelper.scheduleAlarm(
-                        getApplication(),
-                        habitId,
-                        details.habit.getName(),
-                        details.reminder.getTime()
-                );
-//                } else {
-//                    NotificationHelper.cancelAlarm(getApplication(), habitId);
-//                }
-            }
-        });
-    }
-
     public void completeHabit(int habitId) {
         LiveData<MarkDoneResult> source = repository.markHabitAsDone(habitId);
-        // Observe the one-time result from the repository
+        // observing the one-time result from the repository
         source.observeForever(new Observer<MarkDoneResult>() {
             @Override
             public void onChanged(MarkDoneResult result) {
                 markDoneEvent.setValue(result);
-                // Clean up to prevent leaks (since this is a one-time event)
+                // clean up to prevent leaks as this is a one-time event
                 source.removeObserver(this);
             }
         });
     }
 
-    public LiveData<String> getCompletionStatus() {
-        return completionStatus;
-    }
-
     public LiveData<MarkDoneResult> getMarkDoneEvent() {
         return markDoneEvent;
     }
+
+
 }

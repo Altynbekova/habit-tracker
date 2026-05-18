@@ -30,7 +30,7 @@ public class NotificationHelper {
         calendar.set(Calendar.MINUTE, time.getMinute());
         calendar.set(Calendar.SECOND, 0);
 
-        // if the time already passed today, schedule for tomorrow
+        // if the time already passed today schedule for tomorrow
         if (calendar.getTimeInMillis() <= System.currentTimeMillis()) {
             calendar.add(Calendar.DAY_OF_MONTH, 1);
         }
@@ -49,30 +49,30 @@ public class NotificationHelper {
 
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                // Check if we are allowed to use EXACT alarms
-                // Use setExactAndAllowWhileIdle for the first occurrence
+                // check if EXACT alarms usage is allowed
+                // use setExactAndAllowWhileIdle for the first occurrence
                 if (alarmManager.canScheduleExactAlarms()) {
                     alarmManager.setExactAndAllowWhileIdle(
                             AlarmManager.RTC_WAKEUP,
                             calendar.getTimeInMillis(),
                             pendingIntent);
                 } else {
-                    // Fallback: Use non-exact alarm to avoid crash
-                    // This will still fire, but potentially a few minutes late
+                    // fallback: use non-exact alarm to avoid crash
+                    // this will still fire, but potentially a few minutes late
                     alarmManager.setAndAllowWhileIdle(
                             AlarmManager.RTC_WAKEUP,
                             calendar.getTimeInMillis(),
                             pendingIntent);
                 }
             } else {
-                // Below Android 12, no permission check is needed
+                // below Android 12 no permission check is needed
                 alarmManager.setExactAndAllowWhileIdle(
                         AlarmManager.RTC_WAKEUP,
                         calendar.getTimeInMillis(),
                         pendingIntent);
             }
         } catch (SecurityException e) {
-            // Final fallback if system still denies it
+            // final fallback if system still denies it
             alarmManager.setExactAndAllowWhileIdle(
                     AlarmManager.RTC_WAKEUP,
                     calendar.getTimeInMillis(),
@@ -86,17 +86,17 @@ public class NotificationHelper {
     public static void cancelAlarm(Context context, int habitId) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-        // The Intent must match the one used to schedule the alarm
+        // Intent must match the one used to schedule the alarm
         Intent intent = new Intent(context, HabitReminderReceiver.class);
 
-        // Use the same habitId as the requestCode
+        // the same habitId as the requestCode
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
                 context, habitId, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         if (alarmManager != null) {
-            // This stops the AlarmManager from firing the intent
+            // stop the AlarmManager from firing the intent
             alarmManager.cancel(pendingIntent);
-            // Also cancel the PendingIntent itself to clean up
+            // cancel the PendingIntent itself to clean up
             pendingIntent.cancel();
         }
     }

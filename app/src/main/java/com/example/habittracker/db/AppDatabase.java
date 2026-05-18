@@ -78,7 +78,6 @@ public abstract class AppDatabase extends RoomDatabase {
                                     AppDatabase.class,
                                     DB_NAME)
                             .addCallback(sRoomDatabaseCallback)
-//                            .fallbackToDestructiveMigration(true)
                             .build();
                 }
             }

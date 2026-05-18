@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.habittracker.R;
+import com.example.habittracker.databinding.FragmentHabitListBinding;
 import com.example.habittracker.db.entity.Category;
 import com.example.habittracker.db.entity.HabitModel;
 import com.example.habittracker.ui.adapter.ItemAdapter;
@@ -44,21 +45,23 @@ import nl.dionsegijn.konfetti.core.emitter.EmitterConfig;
 import nl.dionsegijn.konfetti.xml.KonfettiView;
 
 public class HabitListFragment extends Fragment {
-
+    private FragmentHabitListBinding binding;
     private HabitViewModel habitViewModel;
     private ItemAdapter adapter;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_habit_list, container, false);
+//        return inflater.inflate(R.layout.fragment_habit_list, container, false);
+        binding = FragmentHabitListBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        RecyclerView recyclerView = view.findViewById(R.id.recyclerViewHabits);
+        RecyclerView recyclerView = binding.recyclerViewHabits;
         habitViewModel = new ViewModelProvider(this).get(HabitViewModel.class);
 
         adapter = new ItemAdapter(new ItemAdapter.OnHabitClickListener() {
@@ -104,7 +107,7 @@ public class HabitListFragment extends Fragment {
         });
 
         // dynamic Categories (Filtering)
-        ChipGroup categoryChipGroup = view.findViewById(R.id.categoryChipGroup);
+        ChipGroup categoryChipGroup = binding.categoryChipGroup;
         habitViewModel.getAllCategories().observe(getViewLifecycleOwner(), categories -> {
             categoryChipGroup.removeAllViews();
 
@@ -112,7 +115,7 @@ public class HabitListFragment extends Fragment {
             Chip allChip = new Chip(getContext());
             allChip.setText("Все");
             allChip.setCheckable(true);
-            allChip.setId(R.id.chipAll); // Unique ID for selection
+            allChip.setId(R.id.chipAll);
             allChip.setTag(null);
             allChip.setChecked(true);
             allChip.setChipIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_all_inclusive, null));
@@ -145,15 +148,14 @@ public class HabitListFragment extends Fragment {
         });
 
         // sorting Logic
-        ChipGroup sortChipGroup = view.findViewById(R.id.sortChipGroup); // ensure this is a separate group
-        sortChipGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
+        binding.sortChipGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
             if (checkedIds.isEmpty()) return;
             int id = checkedIds.get(0);
             if (id == R.id.chipSortName) habitViewModel.setSortType(SortType.NAME);
             else if (id == R.id.chipSortDate) habitViewModel.setSortType(SortType.DATE);
         });
 
-        MaterialButton btnDirection = view.findViewById(R.id.btnSortDirection);
+        MaterialButton btnDirection = binding.btnSortDirection;
         habitViewModel.getIsAscending().observe(getViewLifecycleOwner(), isAsc -> {
             btnDirection.setIconResource(isAsc ? R.drawable.ic_arrow_up : R.drawable.ic_arrow_down);
         });
@@ -278,7 +280,6 @@ public class HabitListFragment extends Fragment {
 
         new ItemTouchHelper(swipeCallback).attachToRecyclerView(recyclerView);
     }
-
 
     private void showConfettiAnimation() {
         final KonfettiView konfettiView = getView().findViewById(R.id.konfettiView);

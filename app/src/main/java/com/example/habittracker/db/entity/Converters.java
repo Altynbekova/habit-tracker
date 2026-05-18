@@ -11,34 +11,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Converters {
-    @TypeConverter
-    public static boolean[] fromString(String value) {
-        if (value == null || value.isEmpty()) {
-            return null;
-        }
-
-        String[] strings = value.split(",");
-        boolean[] booleans = new boolean[strings.length];
-        for (int i = 0; i < strings.length; i++) {
-            booleans[i] = Boolean.parseBoolean(strings[i]);
-        }
-        return booleans;
-    }
-
-    @TypeConverter
-    public static String fromBooleanArray(boolean[] value) {
-        if (value == null) {
-            return null;
-        }
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < value.length; i++) {
-            builder.append(value[i]);
-            if (i < value.length - 1) {
-                builder.append(",");
-            }
-        }
-        return builder.toString();
-    }
 
     @TypeConverter
     public static LocalDate fromDateString(String value) {
@@ -70,24 +42,6 @@ public class Converters {
         return dateTime == null ? null : dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
     }
 
-    // --- Lists of Integers (e.g., selectedDays) ---
-    @TypeConverter
-    public static List<Integer> fromIntegerList(String value) {
-        if (value == null || value.isEmpty()) return null;
-        return Arrays.stream(value.split(","))
-                .map(Integer::parseInt)
-                .collect(Collectors.toList());
-    }
-
-    @TypeConverter
-    public static String toIntegerList(List<Integer> list) {
-        if (list == null || list.isEmpty()) return null;
-        return list.stream()
-                .map(Object::toString)
-                .collect(Collectors.joining(","));
-    }
-
-    // --- Lists of LocalTime (e.g., reminderTimes) ---
     @TypeConverter
     public static List<LocalTime> fromLocalTimeList(String value) {
         if (value == null || value.isEmpty()) return null;

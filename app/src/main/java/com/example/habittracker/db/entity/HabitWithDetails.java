@@ -4,20 +4,42 @@ import androidx.room.Embedded;
 import androidx.room.Relation;
 
 public class HabitWithDetails {
-
-    // @Embedded flattens the fields of HabitModel into this object
     @Embedded
-    public HabitModel habit;
+    private HabitModel habit;
 
     @Relation(
             parentColumn = "categoryId",
             entityColumn = "id"
     )
-    public Category category;
+    private Category category;
 
     @Relation(
             parentColumn = "id",
             entityColumn = "habitId"
     )
-    public Reminder reminder;
+    private Reminder reminder;
+
+    public HabitModel getHabit() {
+        return habit;
+    }
+
+    public void setHabit(HabitModel habit) {
+        this.habit = habit;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public Reminder getReminder() {
+        return reminder;
+    }
+
+    public void setReminder(Reminder reminder) {
+        this.reminder = reminder;
+    }
 }

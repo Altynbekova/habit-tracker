@@ -32,7 +32,7 @@ public class HabitReminderReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        // Ensure you have POST_NOTIFICATIONS permission on Android 13+
+        // ensure that POST_NOTIFICATIONS permission on Android 13+ is granted
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS)
                     != PackageManager.PERMISSION_GRANTED) {
@@ -48,9 +48,9 @@ public class HabitReminderReceiver extends BroadcastReceiver {
         int minute = intent.getIntExtra("minute", 0);
         AsyncTask.execute(() -> {
             HabitWithDetails details = new AppRepo(context).getHabitWithDetailsSync(habitId);
-            if (details != null && details.reminder != null && details.reminder.isEnabled() &&
-                    !details.habit.isArchived) {
-                //Notification Channel (Required for Android 8.0+)
+            if (details != null && details.getReminder() != null && details.getReminder().isEnabled() &&
+                    !details.getHabit().isArchived) {
+                //notification channel (Required for Android 8.0+)
                 createNotificationChannel(context);
 
                 Intent activityIntent = new Intent(context, MainActivity.class);
@@ -86,7 +86,7 @@ public class HabitReminderReceiver extends BroadcastReceiver {
             calendar.add(Calendar.DAY_OF_MONTH, 1);
         }
 
-        // RESCHEDULE
+        // reschedule
 //        LocalTime nextTime = LocalTime.of(hour, minute);// make it "Daily"
         LocalTime nextTime = LocalDateTime.ofInstant(
                         calendar.toInstant(),

@@ -6,8 +6,6 @@ import android.view.View;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.BindingAdapter;
 
-import com.example.habittracker.R;
-
 public class DataBindingAdapter {
     @BindingAdapter("android:background")
     public static void setBackgroundColor(View view, String color) {
