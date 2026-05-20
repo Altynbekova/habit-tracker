@@ -16,6 +16,7 @@ import com.example.habittracker.db.entity.Category;
 import com.example.habittracker.db.entity.FrequencyType;
 import com.example.habittracker.db.entity.HabitModel;
 import com.example.habittracker.viewmodel.HabitViewModel;
+import com.example.habittracker.viewmodel.HabitViewModelFactory;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -44,15 +45,16 @@ public class AddHabitSheet extends BottomSheetDialogFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         binding = DialogAddHabitBinding.inflate(getLayoutInflater(), container, false);
-        viewModel = new ViewModelProvider(requireActivity()).get(HabitViewModel.class);
-
         return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        viewModel = new ViewModelProvider(requireActivity()).get(HabitViewModel.class);
+
+        HabitViewModelFactory factory = new HabitViewModelFactory(requireActivity().getApplication());
+        viewModel = new ViewModelProvider(this, factory).get(HabitViewModel.class);
+//        viewModel = new ViewModelProvider(requireActivity()).get(HabitViewModel.class);
 
         if (getArguments() != null) {
             habitId = getArguments().getInt("habitId", -1);
@@ -70,7 +72,7 @@ public class AddHabitSheet extends BottomSheetDialogFragment {
 
             List<String> names = new ArrayList<>();
             for (Category c : categories) {
-                names.add(c.name);
+                names.add(c.getName());
             }
 
             ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
@@ -79,15 +81,15 @@ public class AddHabitSheet extends BottomSheetDialogFragment {
 
             if (habitId == -1 && existingHabit != null && existingHabit.categoryId == null) {
                 Category defaultCategory = categories.get(0);
-                existingHabit.categoryId = defaultCategory.id;
-                binding.categoryDropdown.setText(defaultCategory.name, false);
+                existingHabit.categoryId = defaultCategory.getId();
+                binding.categoryDropdown.setText(defaultCategory.getName(), false);
             }
 
             binding.categoryDropdown.setThreshold(1);
             binding.categoryDropdown.setOnItemClickListener(
                     (parent, itemView, position, id) -> {
                         if (existingHabit != null) {
-                            existingHabit.categoryId = categories.get(position).id;
+                            existingHabit.categoryId = categories.get(position).getId();
 
                             // clear the validation error state as soon as any category has been chosen
                             View parentLayout = (View) binding.categoryDropdown.getParent().getParent();
@@ -120,7 +122,7 @@ public class AddHabitSheet extends BottomSheetDialogFragment {
                     prefillCategoryName(currentCategories, existingHabit.categoryId);
                 } else if (habitWithCategory.getCategory() != null) {
                     // fallback. use the joined category object directly
-                    binding.categoryDropdown.setText(habitWithCategory.getCategory().name, false);
+                    binding.categoryDropdown.setText(habitWithCategory.getCategory().getName(), false);
                 }
             });
         }
@@ -134,12 +136,11 @@ public class AddHabitSheet extends BottomSheetDialogFragment {
             existingHabit.setTargetDays(Integer.parseInt(binding.editTextTargetDays.getText().toString().trim()));
 
             if (habitId == -1) {
-                existingHabit.createdAt = LocalDateTime.now();
-                existingHabit.frequencyType = FrequencyType.DAILY;
+                existingHabit.setCreatedAt(LocalDateTime.now());
                 viewModel.addHabit(existingHabit);
             } else {
                 if (existingHabit.getCurrentStreak() >= existingHabit.getTargetDays()) {
-                    existingHabit.isCompleted = true;
+                    existingHabit.setCompleted(true);
                 }
                 viewModel.updateHabit(existingHabit);
             }
@@ -168,8 +169,8 @@ public class AddHabitSheet extends BottomSheetDialogFragment {
 
     private void prefillCategoryName(List<Category> categories, long categoryId) {
         for (Category c : categories) {
-            if (c.id == categoryId) {
-                binding.categoryDropdown.setText(c.name, false);
+            if (c.getId() == categoryId) {
+                binding.categoryDropdown.setText(c.getName(), false);
                 break;
             }
         }

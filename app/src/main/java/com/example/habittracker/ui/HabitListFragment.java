@@ -28,6 +28,7 @@ import com.example.habittracker.ui.adapter.ItemAdapter;
 import com.example.habittracker.util.NotificationHelper;
 import com.example.habittracker.util.Utils;
 import com.example.habittracker.viewmodel.HabitViewModel;
+import com.example.habittracker.viewmodel.HabitViewModelFactory;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
@@ -62,7 +63,9 @@ public class HabitListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         RecyclerView recyclerView = binding.recyclerViewHabits;
-        habitViewModel = new ViewModelProvider(this).get(HabitViewModel.class);
+        HabitViewModelFactory factory = new HabitViewModelFactory(requireActivity().getApplication());
+        habitViewModel = new ViewModelProvider(this, factory).get(HabitViewModel.class);
+//        habitViewModel = new ViewModelProvider(this).get(HabitViewModel.class);
 
         adapter = new ItemAdapter(new ItemAdapter.OnHabitClickListener() {
             @Override
@@ -124,12 +127,12 @@ public class HabitListFragment extends Fragment {
 
             for (Category category : categories) {
                 Chip chip = new Chip(getContext());
-                chip.setText(category.name);
-                chip.setTag(category.id);
+                chip.setText(category.getName());
+                chip.setTag(category.getId());
                 chip.setCheckable(true);
                 chip.setChipIconVisible(true);
                 chip.setId(View.generateViewId());
-                chip.setChipIcon(ContextCompat.getDrawable(getContext(), Utils.drawableMap.get(category.icon)));
+                chip.setChipIcon(ContextCompat.getDrawable(getContext(), Utils.drawableMap.get(category.getIcon())));
                 categoryChipGroup.addView(chip);
             }
         });
@@ -187,7 +190,7 @@ public class HabitListFragment extends Fragment {
 
                 HabitModel habit = adapter.getCurrentList().get(position);
 
-                if (habit.isCompleted) {
+                if (habit.isCompleted()) {
                     // only allow swiping LEFT
                     return makeMovementFlags(0, ItemTouchHelper.LEFT);
                 }
@@ -236,7 +239,7 @@ public class HabitListFragment extends Fragment {
                 HabitModel habit = (position != RecyclerView.NO_POSITION) ? adapter.getCurrentList().get(position) : null;
 
                 if (dX > 0) {
-                    if (habit != null && !habit.isCompleted) {
+                    if (habit != null && !habit.isCompleted()) {
                         // swiping Right - Edit
                         // draw Green deleteBg for Edit
                         editBg.setBounds(itemView.getLeft(), itemView.getTop(),

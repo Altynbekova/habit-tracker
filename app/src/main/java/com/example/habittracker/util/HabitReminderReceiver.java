@@ -49,7 +49,7 @@ public class HabitReminderReceiver extends BroadcastReceiver {
         AsyncTask.execute(() -> {
             HabitWithDetails details = new AppRepo(context).getHabitWithDetailsSync(habitId);
             if (details != null && details.getReminder() != null && details.getReminder().isEnabled() &&
-                    !details.getHabit().isArchived) {
+                    !details.getHabit().isArchived()) {
                 //notification channel (Required for Android 8.0+)
                 createNotificationChannel(context);
 

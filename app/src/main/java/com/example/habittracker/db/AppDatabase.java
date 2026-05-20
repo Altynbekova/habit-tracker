@@ -52,7 +52,6 @@ public abstract class AppDatabase extends RoomDatabase {
                 habitModel1.setColor("#B5EAD7");
                 habitModel1.setTargetDays(21);
                 habitModel1.setCreatedAt(LocalDateTime.now());
-                habitModel1.setFrequencyType(FrequencyType.DAILY);
                 habitModel1.categoryId = 1L;
 
                 HabitModel habitModel2 = new HabitModel();
@@ -61,7 +60,6 @@ public abstract class AppDatabase extends RoomDatabase {
                 habitModel2.setColor("#AEC6CF");
                 habitModel2.setTargetDays(30);
                 habitModel2.setCreatedAt(LocalDateTime.now());
-                habitModel2.setFrequencyType(FrequencyType.DAILY);
                 habitModel2.categoryId = 3L;
 
                 dao.insert(habitModel1);

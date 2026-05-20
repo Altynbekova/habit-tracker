@@ -1,12 +1,16 @@
-package com.example.habittracker;
+package com.example.habittracker.ui;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
+
+import com.example.habittracker.MainActivity;
+import com.example.habittracker.R;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -21,7 +25,7 @@ public class FabBehaviorTest {
 
     @Test
     public void clickFab_sameActivity(){
-        onView(withId(R.id.fabAddHabit)).perform(click());
+        onView(ViewMatchers.withId(R.id.fabAddHabit)).perform(click());
 
     }
 }

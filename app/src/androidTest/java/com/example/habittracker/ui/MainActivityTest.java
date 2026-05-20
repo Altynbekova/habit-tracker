@@ -1,4 +1,4 @@
-package com.example.habittracker;
+package com.example.habittracker.ui;
 
 
 import static androidx.test.espresso.Espresso.onView;
@@ -15,10 +15,15 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 
 import androidx.test.espresso.ViewInteraction;
+import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
+import com.example.habittracker.MainActivity;
+import com.example.habittracker.R;
+
+import org.hamcrest.CoreMatchers;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
@@ -56,7 +61,7 @@ public class MainActivityTest {
     @Test
     public void mainActivityTest() {
         ViewInteraction floatingActionButton = onView(
-                allOf(withId(R.id.fabAddHabit), withContentDescription("Добавить привычку"),
+                CoreMatchers.allOf(ViewMatchers.withId(R.id.fabAddHabit), withContentDescription("Добавить привычку"),
                         childAtPosition(
                                 allOf(withId(R.id.main_content),
                                         childAtPosition(withId(android.R.id.content), 0)),

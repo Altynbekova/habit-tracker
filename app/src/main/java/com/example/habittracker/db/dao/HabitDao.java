@@ -46,6 +46,9 @@ public abstract class HabitDao {
     @Query("SELECT * FROM habits WHERE isArchived = 0 ORDER BY name ASC")
     public abstract LiveData<List<HabitModel>> getAllActiveHabits();
 
+    @Query("SELECT * FROM habits WHERE isArchived = 0 ORDER BY name ASC")
+    public abstract List<HabitModel> getAllActiveHabitsSync();
+
     @Query("UPDATE habits SET isArchived = 0 WHERE id = :id")
     public abstract void restoreHabit(long id);
 
@@ -107,7 +110,7 @@ public abstract class HabitDao {
         HabitWithCompletion habitWithCompletion = getHabitWithCompletionSync(habitId);
         HabitModel habit = habitWithCompletion.getHabit();
 
-        if (habit.isCompleted) {
+        if (habit.isCompleted()) {
             return MarkDoneResult.GOAL_REACHED;
         }
         if (habitWithCompletion.getCompletion() != null &&
@@ -133,7 +136,7 @@ public abstract class HabitDao {
             completion.setStatus(CompletionStatus.PARTIAL);
             result = MarkDoneResult.SUCCESS;
         } else {
-            habit.isCompleted = true;
+            habit.setCompleted(true);
             completion.setStatus(CompletionStatus.COMPLETED);
             result = MarkDoneResult.GOAL_REACHED;
         }

@@ -14,16 +14,13 @@ import java.time.LocalDateTime;
                 childColumns = "categoryId",
                 onDelete = ForeignKey.SET_NULL))
 public class HabitModel {
-    @NonNull
-    @ColumnInfo(defaultValue = "'DAILY'")
-    public FrequencyType frequencyType;//todo delete
     @ColumnInfo(index = true)
     public Long categoryId;
-    public boolean isArchived = false;
+    private boolean isArchived = false;
     @NonNull
     @ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
-    public LocalDateTime createdAt;
-    public boolean isCompleted = false;
+    private LocalDateTime createdAt;
+    private boolean isCompleted = false;
     @PrimaryKey(autoGenerate = true)
     private int id;
     @NonNull
@@ -92,15 +89,6 @@ public class HabitModel {
         this.currentStreak = currentStreak;
     }
 
-    @NonNull
-    public FrequencyType getFrequencyType() {
-        return frequencyType;
-    }
-
-    public void setFrequencyType(@NonNull FrequencyType frequencyType) {
-        this.frequencyType = frequencyType;
-    }
-
     public Long getCategoryId() {
         return categoryId;
     }
@@ -124,5 +112,13 @@ public class HabitModel {
 
     public void setCreatedAt(@NonNull LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public boolean isCompleted() {
+        return isCompleted;
+    }
+
+    public void setCompleted(boolean completed) {
+        isCompleted = completed;
     }
 }

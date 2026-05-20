@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Converters {
+    private static final DateTimeFormatter DATE_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @TypeConverter
     public static LocalDate fromDateString(String value) {
@@ -34,12 +36,12 @@ public class Converters {
 
     @TypeConverter
     public static LocalDateTime fromDateTimeString(String value) {
-        return value == null ? null : LocalDateTime.parse(value, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        return value == null ? null : LocalDateTime.parse(value, DATE_TIME_FORMATTER);
     }
 
     @TypeConverter
     public static String toDateTimeString(LocalDateTime dateTime) {
-        return dateTime == null ? null : dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        return dateTime == null ? null : dateTime.format(DATE_TIME_FORMATTER);
     }
 
     @TypeConverter

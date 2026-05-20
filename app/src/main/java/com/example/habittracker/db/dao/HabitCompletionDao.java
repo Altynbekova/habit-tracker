@@ -18,10 +18,4 @@ public interface HabitCompletionDao {
 
     @Query("SELECT * FROM habit_completions WHERE habitId = :habitId ORDER BY completionDate DESC")
     LiveData<List<HabitCompletion>> getCompletionsForHabit(long habitId);
-
-    @Query("SELECT * FROM habit_completions WHERE habitId = :habitId AND completionDate = :date LIMIT 1")
-    HabitCompletion getCompletionByDate(long habitId, LocalDate date);
-
-    @Query("DELETE FROM habit_completions WHERE habitId = :habitId AND completionDate = :date")
-    void deleteCompletion(long habitId, LocalDate date);
 }

@@ -13,14 +13,11 @@ import java.util.List;
 @Dao
 public interface CategoryDao {
     @Insert
-    void insert(Category category);
+    long insert(Category category);
 
     @Query("SELECT * FROM categories ORDER BY id ASC")
     LiveData<List<Category>> getAllCategories();
 
     @Delete
     void delete(Category category);
-
-    @Query("SELECT * FROM categories where name = :name")
-    LiveData<Category> getCategory(String name);
 }

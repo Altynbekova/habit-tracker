@@ -29,6 +29,7 @@ import com.example.habittracker.databinding.FragmentHabitDetailBinding;
 import com.example.habittracker.db.entity.HabitCompletion;
 import com.example.habittracker.util.NotificationHelper;
 import com.example.habittracker.viewmodel.HabitViewModel;
+import com.example.habittracker.viewmodel.HabitViewModelFactory;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
@@ -112,13 +113,15 @@ public class HabitDetailFragment extends Fragment {
         TextView descText = binding.textLongDescription;
         TextView streakText = binding.textStreakCount;
 
-        habitViewModel = new ViewModelProvider(requireActivity()).get(HabitViewModel.class);
+        HabitViewModelFactory factory = new HabitViewModelFactory(requireActivity().getApplication());
+        habitViewModel = new ViewModelProvider(this, factory).get(HabitViewModel.class);
+//        habitViewModel = new ViewModelProvider(requireActivity()).get(HabitViewModel.class);
 
         habitViewModel.getLiveHabitById(habitId).observe(getViewLifecycleOwner(), habit -> {
             if (habit != null) {
                 nameText.setText(habit.getName());
                 descText.setText(habit.getDescription());
-                if (habit.isCompleted) {
+                if (habit.isCompleted()) {
                     disableButtons(view);
                 }
             }

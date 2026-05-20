@@ -14,7 +14,7 @@ import java.util.List;
 @Dao
 public interface ReminderDao {
     @Insert
-    void insert(Reminder reminder);
+    long insert(Reminder reminder);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertOrUpdate(Reminder reminder);

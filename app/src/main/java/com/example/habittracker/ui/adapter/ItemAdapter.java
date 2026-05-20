@@ -32,8 +32,8 @@ public class ItemAdapter extends ListAdapter<HabitModel, ItemAdapter.HabitViewHo
         @Override
         public boolean areContentsTheSame(@NonNull HabitModel oldItem, @NonNull HabitModel newItem) {
             return oldItem.getName().equals(newItem.getName()) &&
-                    oldItem.isArchived == newItem.isArchived &&
-                    oldItem.isCompleted == newItem.isCompleted &&
+                    oldItem.isArchived() == newItem.isArchived() &&
+                    oldItem.isCompleted() == newItem.isCompleted() &&
                     oldItem.getCategoryId().equals(newItem.getCategoryId());
         }
     };
@@ -64,7 +64,7 @@ public class ItemAdapter extends ListAdapter<HabitModel, ItemAdapter.HabitViewHo
     public void onBindViewHolder(@NonNull HabitViewHolder holder, int position) {
         HabitModel currentHabit = getItem(position);
 
-        if (currentHabit.isCompleted) {
+        if (currentHabit.isCompleted()) {
             MaterialButton completion = holder.cardView.findViewById(R.id.buttonComplete);
             completion.setIconResource(R.drawable.outline_check_24);
         }
@@ -72,7 +72,7 @@ public class ItemAdapter extends ListAdapter<HabitModel, ItemAdapter.HabitViewHo
 
         if (currentHabit.categoryId != null && categoryMap.get(currentHabit.categoryId) != null) {
             holder.imageViewCategory.setImageResource(
-                    Utils.drawableMap.get(categoryMap.get(currentHabit.categoryId).icon)
+                    Utils.drawableMap.get(categoryMap.get(currentHabit.categoryId).getIcon())
             );
             holder.imageViewCategory.setVisibility(View.VISIBLE);
 

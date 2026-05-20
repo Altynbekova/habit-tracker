@@ -42,9 +42,9 @@ public class HabitViewModel extends AndroidViewModel {
     private final MediatorLiveData<HabitModel> habitState = new MediatorLiveData<>();
 
 
-    public HabitViewModel(@NonNull Application application) {
+    public HabitViewModel(@NonNull Application application, AppRepo repository) {
         super(application);
-        repository = new AppRepo(application);
+        this.repository = repository;
         allActiveHabits = repository.getAllActiveHabits();
         // merging both chip selections into one trigger
         MediatorLiveData<Triple<Long, String, Boolean>> filterMerger = new MediatorLiveData<>();
