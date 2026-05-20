@@ -39,18 +39,14 @@ public class MainActivity extends AppCompatActivity {
         navController = navHostFragment.getNavController();
 
         setSupportActionBar(binding.toolbar);
-        // Настройка ActionBar для отображения стрелки "Назад"
         NavigationUI.setupActionBarWithNavController(this, navController);
 
         FloatingActionButton fab = binding.fabAddHabit;
         ViewCompat.setOnApplyWindowInsetsListener(fab, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            // get the current LayoutParams of the FAB
             CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) v.getLayoutParams();
-            // convert 24dp standard margin to pixels
             int marginPx = (int) (24 * getResources().getDisplayMetrics().density);
 
-            // Set bottom margin: Height of Nav Bar + desired 24dp padding
             params.bottomMargin = systemBars.bottom + marginPx;
             params.rightMargin = marginPx; // Keep the side margin consistent too
             v.setLayoutParams(params);
@@ -68,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
 
         fab.setOnClickListener(v -> {
             AddHabitSheet addHabitSheet = new AddHabitSheet();
-            addHabitSheet.show(getSupportFragmentManager(), "AddHabitTag");//todo replace AddHabitTag with AddHabitSheet.class.getSimpleName()
+            addHabitSheet.show(getSupportFragmentManager(), "AddHabitTag");
         });
 
 

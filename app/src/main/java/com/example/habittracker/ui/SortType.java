@@ -1,6 +1,6 @@
 package com.example.habittracker.ui;
 
 public enum SortType {
-    NAME,       // alphabetical (A-Z)
-    DATE   // newest. Recently Created
+    NAME,   // alphabetical (A-Z)
+    DATE    // newest. Recently Created
 }

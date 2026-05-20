@@ -92,7 +92,6 @@ public class HabitViewModelTest {
 
     @Test
     public void filterMerger_triggersRepositoryFilter_whenCategoryChanges() {
-        // Arrange
         viewModel.filteredHabits.observeForever(habitsObserver);
         List<HabitModel> expectedHabits = new ArrayList<>();
         mockFilteredHabits.setValue(expectedHabits);

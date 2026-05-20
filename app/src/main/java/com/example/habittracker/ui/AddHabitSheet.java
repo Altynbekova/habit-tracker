@@ -13,7 +13,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.habittracker.R;
 import com.example.habittracker.databinding.DialogAddHabitBinding;
 import com.example.habittracker.db.entity.Category;
-import com.example.habittracker.db.entity.FrequencyType;
 import com.example.habittracker.db.entity.HabitModel;
 import com.example.habittracker.viewmodel.HabitViewModel;
 import com.example.habittracker.viewmodel.HabitViewModelFactory;
@@ -54,7 +53,6 @@ public class AddHabitSheet extends BottomSheetDialogFragment {
 
         HabitViewModelFactory factory = new HabitViewModelFactory(requireActivity().getApplication());
         viewModel = new ViewModelProvider(this, factory).get(HabitViewModel.class);
-//        viewModel = new ViewModelProvider(requireActivity()).get(HabitViewModel.class);
 
         if (getArguments() != null) {
             habitId = getArguments().getInt("habitId", -1);

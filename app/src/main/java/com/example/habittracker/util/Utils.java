@@ -17,10 +17,6 @@ public class Utils {
 
     public static List<Category> categories() {
         return List.of(
-//                new Category("Health", Integer.parseInt("89F336", 16)),
-//                new Category("Work", Integer.parseInt("FF9C27", 16)),
-//                new Category("Personal", Integer.parseInt("FF4CAF", 16)),
-//                new Category("Other", Integer.parseInt("B39DDB", 16))
                 new Category("Здоровье", "ic_health_metrics"),
                 new Category("Работа", "ic_work_outline"),
                 new Category("Личное", "ic_person"),

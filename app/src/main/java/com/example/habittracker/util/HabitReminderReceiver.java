@@ -60,8 +60,8 @@ public class HabitReminderReceiver extends BroadcastReceiver {
 
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                         .setSmallIcon(R.drawable.ic_notification) // Use your icon
-                        .setContentTitle("Habit Reminder")
-                        .setContentText("Time for: " + habitName)
+                        .setContentTitle("Трекер Привычек")
+                        .setContentText("Время для: " + habitName)
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
                         .setAutoCancel(true)
                         .setContentIntent(contentIntent);
@@ -74,12 +74,8 @@ public class HabitReminderReceiver extends BroadcastReceiver {
         });
 
         Calendar calendar = Calendar.getInstance();
-        /*// instant 2-minute test:
-        calendar.add(Calendar.MINUTE, 1);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);*/
 
-        // Regular Daily Logic (Commented out for 2-minute test)
+        // Regular Daily Logic
         calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.MINUTE, minute);
         if (calendar.getTimeInMillis() <= System.currentTimeMillis()) {
@@ -87,7 +83,6 @@ public class HabitReminderReceiver extends BroadcastReceiver {
         }
 
         // reschedule
-//        LocalTime nextTime = LocalTime.of(hour, minute);// make it "Daily"
         LocalTime nextTime = LocalDateTime.ofInstant(
                         calendar.toInstant(),
                         calendar.getTimeZone().toZoneId())
@@ -98,29 +93,10 @@ public class HabitReminderReceiver extends BroadcastReceiver {
             Reminder reminder = db.reminderDao().getReminderForHabit(habitId);
 
             // only reschedule if the user hasn't turned off the switch in the meantime
-//            if (reminder != null && reminder.enabled) {
             if (reminder != null) {
                 NotificationHelper.scheduleAlarm(context, habitId, habitName, nextTime);
             }
         }).start();
-
-
-//        NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Habit Reminders", NotificationManager.IMPORTANCE_HIGH);
-            manager.createNotificationChannel(channel);
-        }
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(R.drawable.ic_notification) // Ensure this exists
-                .setContentTitle("Habit Reminder")
-                .setContentText("Time for: " + habitName)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setAutoCancel(true);
-
-        // using habitId ensures multiple habits show separate notifications
-        manager.notify(habitId, builder.build());*/
     }
 
     private void createNotificationChannel(Context context) {
@@ -129,7 +105,6 @@ public class HabitReminderReceiver extends BroadcastReceiver {
                     CHANNEL_ID, "Habit Reminders", NotificationManager.IMPORTANCE_HIGH);
             channel.setDescription("Notifications for scheduled habits");
 
-            /*NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);*/
             NotificationManager manager = context.getSystemService(NotificationManager.class);
             if (manager != null) {
                 manager.createNotificationChannel(channel);

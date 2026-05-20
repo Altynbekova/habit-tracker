@@ -29,23 +29,17 @@ import kotlin.Triple;
 public class HabitViewModel extends AndroidViewModel {
     public final LiveData<List<HabitModel>> filteredHabits;
     private final AppRepo repository;
-    private final LiveData<List<HabitModel>> allActiveHabits;
     private final MutableLiveData<SortType> sortType = new MutableLiveData<>(SortType.NAME);
     private final MutableLiveData<Long> filterCategoryId = new MutableLiveData<>(null); // null = All
     private final MutableLiveData<Boolean> isAscending = new MutableLiveData<>(true);
     private final MutableLiveData<Long> selectedCategoryId = new MutableLiveData<>(null);
     private final MutableLiveData<String> selectedSortType = new MutableLiveData<>("NAME");
-    //    public final LiveData<List<HabitModel>> habits;
-    private final MutableLiveData<String> completionStatus = new MutableLiveData<>();
     private final SingleLiveEvent<MarkDoneResult> markDoneEvent = new SingleLiveEvent<>();
-
-    private final MediatorLiveData<HabitModel> habitState = new MediatorLiveData<>();
 
 
     public HabitViewModel(@NonNull Application application, AppRepo repository) {
         super(application);
         this.repository = repository;
-        allActiveHabits = repository.getAllActiveHabits();
         // merging both chip selections into one trigger
         MediatorLiveData<Triple<Long, String, Boolean>> filterMerger = new MediatorLiveData<>();
         filterMerger.addSource(selectedCategoryId, id ->

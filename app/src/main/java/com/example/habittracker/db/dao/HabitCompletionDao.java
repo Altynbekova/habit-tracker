@@ -8,7 +8,6 @@ import androidx.room.Query;
 
 import com.example.habittracker.db.entity.HabitCompletion;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Dao

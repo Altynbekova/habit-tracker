@@ -15,7 +15,6 @@ import com.example.habittracker.db.dao.HabitDao;
 import com.example.habittracker.db.dao.ReminderDao;
 import com.example.habittracker.db.entity.Category;
 import com.example.habittracker.db.entity.Converters;
-import com.example.habittracker.db.entity.FrequencyType;
 import com.example.habittracker.db.entity.HabitCompletion;
 import com.example.habittracker.db.entity.HabitModel;
 import com.example.habittracker.db.entity.Reminder;
@@ -49,7 +48,6 @@ public abstract class AppDatabase extends RoomDatabase {
                 HabitModel habitModel1 = new HabitModel();
                 habitModel1.setName("Зарядка");
                 habitModel1.setDescription("Утренняя зарядка 15 минут");
-                habitModel1.setColor("#B5EAD7");
                 habitModel1.setTargetDays(21);
                 habitModel1.setCreatedAt(LocalDateTime.now());
                 habitModel1.categoryId = 1L;
@@ -57,7 +55,6 @@ public abstract class AppDatabase extends RoomDatabase {
                 HabitModel habitModel2 = new HabitModel();
                 habitModel2.setName("Пить воду");
                 habitModel2.setDescription("Выпивать 2 литра воды в день");
-                habitModel2.setColor("#AEC6CF");
                 habitModel2.setTargetDays(30);
                 habitModel2.setCreatedAt(LocalDateTime.now());
                 habitModel2.categoryId = 3L;

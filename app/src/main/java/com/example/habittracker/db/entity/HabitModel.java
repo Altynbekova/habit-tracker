@@ -27,18 +27,10 @@ public class HabitModel {
     @ColumnInfo(index = true)
     private String name;
     private String description;
-    private String color;//todo delete
     private int targetDays;
     private int currentStreak;
 
     public HabitModel() {
-    }
-
-    public HabitModel(String name, String description, String color, int targetDays) {
-        this.name = name;
-        this.description = description;
-        this.color = color;
-        this.targetDays = targetDays;
     }
 
     public int getId() {
@@ -63,14 +55,6 @@ public class HabitModel {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
     }
 
     public int getTargetDays() {

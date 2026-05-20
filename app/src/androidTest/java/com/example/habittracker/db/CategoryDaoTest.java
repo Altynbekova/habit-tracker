@@ -51,7 +51,6 @@ public class CategoryDaoTest {
         Category sports = new Category("Спорт", "ic_sport");
         Category health = new Category("Здоровье", "ic_health");
 
-        // Act
         long id1 = categoryDao.insert(sports);
         long id2 = categoryDao.insert(health);
 

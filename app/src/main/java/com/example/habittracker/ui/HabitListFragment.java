@@ -53,7 +53,6 @@ public class HabitListFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-//        return inflater.inflate(R.layout.fragment_habit_list, container, false);
         binding = FragmentHabitListBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -65,7 +64,6 @@ public class HabitListFragment extends Fragment {
         RecyclerView recyclerView = binding.recyclerViewHabits;
         HabitViewModelFactory factory = new HabitViewModelFactory(requireActivity().getApplication());
         habitViewModel = new ViewModelProvider(this, factory).get(HabitViewModel.class);
-//        habitViewModel = new ViewModelProvider(this).get(HabitViewModel.class);
 
         adapter = new ItemAdapter(new ItemAdapter.OnHabitClickListener() {
             @Override

@@ -57,7 +57,7 @@ public class HabitDetailFragment extends Fragment {
     private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
-                    // check if view still exists (fragment might have been closed)
+                    // check if view still exists. Fragment might have been closed
                     if (getView() != null) {
                         showTimePicker(binding.textNotificationTime, binding.switchNotification);
                     }
@@ -103,7 +103,6 @@ public class HabitDetailFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentHabitDetailBinding.inflate(inflater, container, false);
         return binding.getRoot();
-//        return inflater.inflate(R.layout.fragment_habit_detail, container, false);
     }
 
     @Override
@@ -115,7 +114,6 @@ public class HabitDetailFragment extends Fragment {
 
         HabitViewModelFactory factory = new HabitViewModelFactory(requireActivity().getApplication());
         habitViewModel = new ViewModelProvider(this, factory).get(HabitViewModel.class);
-//        habitViewModel = new ViewModelProvider(requireActivity()).get(HabitViewModel.class);
 
         habitViewModel.getLiveHabitById(habitId).observe(getViewLifecycleOwner(), habit -> {
             if (habit != null) {

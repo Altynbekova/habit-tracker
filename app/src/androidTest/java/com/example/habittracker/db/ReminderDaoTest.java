@@ -110,7 +110,7 @@ public class ReminderDaoTest {
         int habitId1 = createAndInsertHabit("Gym");
         int habitId2 = createAndInsertHabit("Meditation");
         int habitId3 = createAndInsertHabit("Coding");
-        // Arrange
+
         Reminder r1 = new Reminder();
         r1.setHabitId(habitId1);
         r1.setEnabled(true);

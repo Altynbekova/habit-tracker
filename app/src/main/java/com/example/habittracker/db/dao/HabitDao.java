@@ -106,7 +106,7 @@ public abstract class HabitDao {
     public abstract int isHabitDoneOnDate(int habitId, String date);
 
     @Transaction
-    public MarkDoneResult markAsDoneAndCalculateStreak(int habitId, LocalDateTime dateTime)/* throws HabitNotFoundException, InvalidAction */ {
+    public MarkDoneResult markAsDoneAndCalculateStreak(int habitId, LocalDateTime dateTime) {
         HabitWithCompletion habitWithCompletion = getHabitWithCompletionSync(habitId);
         HabitModel habit = habitWithCompletion.getHabit();
 
